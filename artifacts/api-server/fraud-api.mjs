@@ -99,7 +99,7 @@ function buildInvestigation(row, mlResult, id) {
     ? (featureValues.dangerous_perm_count > 1 ? "Banking Trojan"
        : featureValues.suspicious_domain_count > 0 ? "Credential Stealer"
        : amount > 70000 ? "High-Value Fraud" : "SMS Interceptor")
-    : "Benign";
+    : "Clean / No Threat";
 
   // Build IOCs from actual dataset fields (not random)
   const iocs = [];
