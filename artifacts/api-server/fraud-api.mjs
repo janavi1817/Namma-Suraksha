@@ -359,5 +359,64 @@ app.get("/api/campaigns/:clusterId", (req, res) => {
   });
 });
 
+// ── ML Engine Proxy (forwards to Python ML server on port 8090) ──
+
+const ML_URL = process.env.ML_URL || "http://localhost:8090";
+
+async function mlFetch(path) {
+  try {
+    const resp = await fetch(`${ML_URL}${path}`);
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
+
+async function mlPost(path, body) {
+  try {
+    const resp = await fetch(`${ML_URL}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
+
+app.get("/api/ml/health", async (_req, res) => {
+  const data = await mlFetch("/ml/health");
+  res.json(data || { status: "ml_server_offline", model_trained: false });
+});
+
+app.get("/api/ml/metrics", async (_req, res) => {
+  const data = await mlFetch("/ml/metrics");
+  if (!data) return res.status(503).json({ error: "ML server offline" });
+  res.json(data);
+});
+
+app.get("/api/ml/feature-importance", async (_req, res) => {
+  const data = await mlFetch("/ml/feature-importance");
+  if (!data) return res.status(503).json({ error: "ML server offline" });
+  res.json(data);
+});
+
+app.get("/api/ml/clusters", async (_req, res) => {
+  const data = await mlFetch("/ml/clusters");
+  if (!data) return res.status(503).json({ error: "ML server offline" });
+  res.json(data);
+});
+
+app.get("/api/ml/explainability", async (_req, res) => {
+  const data = await mlFetch("/ml/explainability");
+  if (!data) return res.status(503).json({ error: "ML server offline" });
+  res.json(data);
+});
+
+app.post("/api/ml/predict", async (req, res) => {
+  const data = await mlPost("/ml/predict", req.body);
+  if (!data) return res.status(503).json({ error: "ML server offline" });
+  res.json(data);
+});
+
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`\n  RAKSHAK Fraud API running → http://localhost:${PORT}/api/healthz\n`));
+app.listen(PORT, () => console.log(`\n  RAKSHAK Fraud API running → http://localhost:${PORT}/api/healthz\n  ML proxy → ${ML_URL}/ml/health\n`));
