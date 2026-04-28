@@ -133,7 +133,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 20% 16%)" />
                 <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontSize: 12 }} />
+                <Tooltip contentStyle={{ backgroundColor: "var(--color-card, #fff)", border: "1px solid var(--color-border, #ddd)", borderRadius: "8px", fontSize: 12, color: "var(--color-foreground, #000)" }} />
                 <Area type="monotone" dataKey="prev" stroke="#6366f1" fill="url(#colorPrev)" strokeWidth={2} name="Last Week" animationDuration={1500} />
                 <Area type="monotone" dataKey="count" stroke="#0095ff" fill="url(#colorCount)" strokeWidth={2} name="This Week" animationDuration={2000} />
               </AreaChart>
@@ -148,20 +148,28 @@ export default function Dashboard() {
             {!riskDist ? <Skeleton className="w-full h-full" /> : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={3} dataKey="count" nameKey="riskLevel" animationBegin={200} animationDuration={1500}
+                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={50} outerRadius={72} paddingAngle={3} dataKey="count" nameKey="riskLevel" animationBegin={200} animationDuration={1500}
                     label={({ riskLevel, count, cx, cy, midAngle, outerRadius: or2 }: any) => {
                       const total = riskDist.reduce((s: number, e: any) => s + e.count, 0);
                       const pct = ((count / total) * 100).toFixed(0);
                       const RADIAN = Math.PI / 180;
-                      const x = cx + (or2 + 18) * Math.cos(-midAngle * RADIAN);
-                      const y = cy + (or2 + 18) * Math.sin(-midAngle * RADIAN);
-                      return <text x={x} y={y} fill="currentColor" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={10} fontFamily="monospace">{pct}%</text>;
+                      const x = cx + (or2 + 22) * Math.cos(-midAngle * RADIAN);
+                      const y = cy + (or2 + 22) * Math.sin(-midAngle * RADIAN);
+                      const color = RISK_COLORS[riskLevel as keyof typeof RISK_COLORS] || "#888";
+                      return <text x={x} y={y} fill={color} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight="bold" fontFamily="monospace">{pct}%</text>;
                     }}>
                     {riskDist.map((entry: any, i: number) => (
                       <Cell key={i} fill={RISK_COLORS[entry.riskLevel as keyof typeof RISK_COLORS] || RISK_COLORS.Low} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }} formatter={(value: any, name: any) => { const total = riskDist.reduce((s: number, e: any) => s + e.count, 0); return [`${value} (${((value as number/total)*100).toFixed(1)}%)`, name]; }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "var(--color-card, #fff)", border: "1px solid var(--color-border, #ddd)", borderRadius: "8px", color: "var(--color-foreground, #000)", padding: "8px 12px" }}
+                    itemStyle={{ color: "var(--color-foreground, #000)" }}
+                    formatter={(value: any, name: any) => {
+                      const total = riskDist.reduce((s: number, e: any) => s + e.count, 0);
+                      return [`${value} samples (${((value as number / total) * 100).toFixed(1)}%)`, name];
+                    }}
+                  />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
