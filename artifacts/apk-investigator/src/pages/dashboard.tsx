@@ -131,9 +131,9 @@ export default function Dashboard() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 20% 16%)" />
-                <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(215 15% 55%)" }} />
-                <YAxis tick={{ fontSize: 11, fill: "hsl(215 15% 55%)" }} />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(220 25% 8%)", borderColor: "hsl(220 20% 16%)", borderRadius: "8px", fontSize: 12 }} />
+                <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", fontSize: 12 }} />
                 <Area type="monotone" dataKey="prev" stroke="#6366f1" fill="url(#colorPrev)" strokeWidth={2} name="Last Week" animationDuration={1500} />
                 <Area type="monotone" dataKey="count" stroke="#0095ff" fill="url(#colorCount)" strokeWidth={2} name="This Week" animationDuration={2000} />
               </AreaChart>
@@ -148,12 +148,20 @@ export default function Dashboard() {
             {!riskDist ? <Skeleton className="w-full h-full" /> : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={3} dataKey="count" nameKey="riskLevel" animationBegin={200} animationDuration={1500}>
+                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={3} dataKey="count" nameKey="riskLevel" animationBegin={200} animationDuration={1500}
+                    label={({ riskLevel, count, cx, cy, midAngle, outerRadius: or2 }: any) => {
+                      const total = riskDist.reduce((s: number, e: any) => s + e.count, 0);
+                      const pct = ((count / total) * 100).toFixed(0);
+                      const RADIAN = Math.PI / 180;
+                      const x = cx + (or2 + 18) * Math.cos(-midAngle * RADIAN);
+                      const y = cy + (or2 + 18) * Math.sin(-midAngle * RADIAN);
+                      return <text x={x} y={y} fill="currentColor" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={10} fontFamily="monospace">{pct}%</text>;
+                    }}>
                     {riskDist.map((entry: any, i: number) => (
                       <Cell key={i} fill={RISK_COLORS[entry.riskLevel as keyof typeof RISK_COLORS] || RISK_COLORS.Low} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(220 25% 8%)", borderColor: "hsl(220 20% 16%)", borderRadius: "8px" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }} formatter={(value: any, name: any) => { const total = riskDist.reduce((s: number, e: any) => s + e.count, 0); return [`${value} (${((value as number/total)*100).toFixed(1)}%)`, name]; }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
@@ -171,7 +179,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={THREAT_RADAR} cx="50%" cy="50%" outerRadius="70%">
                 <PolarGrid stroke="hsl(220 20% 16%)" />
-                <PolarAngleAxis dataKey="type" tick={{ fontSize: 10, fill: "hsl(215 15% 55%)" }} />
+                <PolarAngleAxis dataKey="type" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
                 <Radar name="Threat Level" dataKey="score" stroke="#0095ff" fill="#0095ff" fillOpacity={0.2} animationDuration={2000} />
               </RadarChart>
             </ResponsiveContainer>
@@ -211,29 +219,42 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* District Heatmap */}
+        {/* Karnataka Vulnerability Map */}
         <Card className="cyber-card animate-slide-up">
           <CardHeader>
             <CardTitle className="text-sm font-mono uppercase flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> District Heatmap
+              <MapPin className="h-4 w-4" /> Karnataka Vulnerability Map
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {DISTRICT_DATA.map((d) => (
-                <div key={d.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
-                    <span className="text-sm">{d.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${(d.cases / 50) * 100}%`, backgroundColor: d.color }} />
-                    </div>
-                    <span className="text-xs font-mono font-bold w-8 text-right">{d.cases}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="relative">
+              {/* Simplified Karnataka map outline */}
+              <svg viewBox="0 0 300 350" className="w-full h-[220px]">
+                <path d="M150,10 L200,30 L240,60 L260,100 L270,150 L260,200 L240,240 L220,270 L200,300 L170,330 L140,340 L110,330 L80,300 L60,260 L40,220 L30,180 L35,140 L50,100 L70,60 L100,30 Z" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="1.5" opacity="0.5" />
+                {/* District markers */}
+                {DISTRICT_DATA.map((d, i) => {
+                  const positions = [
+                    { x: 170, y: 180 }, { x: 140, y: 250 }, { x: 90, y: 290 },
+                    { x: 120, y: 120 }, { x: 70, y: 160 }, { x: 200, y: 100 },
+                  ];
+                  const pos = positions[i] || { x: 150, y: 150 };
+                  const r = Math.max(8, d.cases / 3);
+                  return (
+                    <g key={d.name}>
+                      <circle cx={pos.x} cy={pos.y} r={r + 4} fill={d.color} opacity="0.15" className="animate-pulse" />
+                      <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity="0.8" />
+                      <text x={pos.x} y={pos.y - r - 6} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="9" fontFamily="monospace" fontWeight="bold">{d.name}</text>
+                      <text x={pos.x} y={pos.y + 3} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">{d.cases}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+              {/* Legend */}
+              <div className="flex justify-center gap-4 mt-2">
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /><span className="text-[9px] text-muted-foreground">High</span></div>
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500" /><span className="text-[9px] text-muted-foreground">Medium</span></div>
+                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /><span className="text-[9px] text-muted-foreground">Low</span></div>
+              </div>
             </div>
           </CardContent>
         </Card>

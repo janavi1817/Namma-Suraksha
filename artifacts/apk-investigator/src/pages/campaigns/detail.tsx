@@ -5,9 +5,10 @@ import { useGetCampaign, getGetCampaignQueryKey } from "@workspace/api-client-re
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Network, Calendar, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Network, Calendar, ShieldAlert, BarChart3 } from "lucide-react";
 import { RiskBadge } from "@/components/ui/risk-badge";
 import { formatDistanceToNow, format } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 export default function CampaignDetail() {
   const [, params] = useRoute("/campaigns/:clusterId");
@@ -82,6 +83,30 @@ export default function CampaignDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Risk Score Chart */}
+      <Card className="cyber-card">
+        <CardHeader>
+          <CardTitle className="text-sm font-mono uppercase flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-primary" /> Member Risk Scores
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="h-[250px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={campaign.members.map((m: any) => ({ name: m.sampleName.slice(0, 15), score: m.riskScore, risk: m.riskLevel }))}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} angle={-30} textAnchor="end" height={60} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+              <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }} />
+              <Bar dataKey="score" radius={[4, 4, 0, 0]} animationDuration={1500}>
+                {campaign.members.map((m: any, i: number) => (
+                  <Cell key={i} fill={m.riskLevel === "Critical" ? "#ef4444" : m.riskLevel === "High" ? "#f97316" : m.riskLevel === "Medium" ? "#eab308" : "#22c55e"} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
       <div>
         <h2 className="text-xl font-bold font-mono uppercase tracking-tight mb-4 flex items-center gap-2">
