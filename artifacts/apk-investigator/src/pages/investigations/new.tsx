@@ -84,34 +84,124 @@ export default function NewInvestigation() {
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = useCallback((file: File) => {
-    if (file.name.endsWith(".apk") || file.name.endsWith(".aab")) {
-      setUploadedFile(file.name);
-      form.setValue("sampleName", file.name);
-      // Generate SHA256 from file name + size (deterministic, not random)
+  // Read file bytes and extract metadata automatically
+  const extractMetadata = useCallback(async (file: File) => {
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    // Compute real SHA256 hash from file content
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const sha256 = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+    // Try to extract strings from the binary (URLs, IPs, domains, permissions)
+    const textDecoder = new TextDecoder("utf-8", { fatal: false });
+    const rawText = textDecoder.decode(bytes);
+
+    // Extract URLs
+    const urlMatches = rawText.match(/https?:\/\/[^\s<>"{}|\\^`\[\]\x00-\x1f]+/g) || [];
+    const urls = [...new Set(urlMatches)].filter(u => u.length > 10 && u.length < 200).slice(0, 20);
+
+    // Extract domains from URLs
+    const domainSet = new Set<string>();
+    for (const u of urls) {
+      try { domainSet.add(new URL(u).hostname); } catch {}
+    }
+
+    // Extract IP addresses
+    const ipMatches = rawText.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
+    const ips = [...new Set(ipMatches)].filter(ip => !ip.startsWith("0.") && ip !== "127.0.0.1").slice(0, 15);
+
+    // Extract Android permissions
+    const permMatches = rawText.match(/android\.permission\.[A-Z_]+/g) || [];
+    const permissions = [...new Set(permMatches)].slice(0, 20);
+
+    // Extract package name (look for common patterns in APK)
+    let packageName = "";
+    const pkgMatch = rawText.match(/([a-z][a-z0-9]*\.){2,}[a-z][a-z0-9]*/g);
+    if (pkgMatch) {
+      // Find the most likely package name (longest, looks like com.xxx.xxx)
+      const candidates = pkgMatch.filter(p => p.startsWith("com.") || p.startsWith("org.") || p.startsWith("net."));
+      packageName = candidates.sort((a, b) => b.length - a.length)[0] || pkgMatch[0] || "";
+    }
+
+    // Extract API keys (look for common patterns)
+    const apiKeyPatterns = [
+      /AIza[0-9A-Za-z_-]{35}/g,           // Google API
+      /sk[-_]live[-_][0-9A-Za-z]{24,}/g,   // Stripe
+      /[0-9a-f]{32}/g,                      // Generic hex keys
+    ];
+    const apiKeys: string[] = [];
+    for (const pat of apiKeyPatterns) {
+      const matches = rawText.match(pat) || [];
+      apiKeys.push(...matches.slice(0, 3));
+    }
+
+    // Try to detect version from strings
+    const versionMatch = rawText.match(/versionName["\s:=]+([0-9]+\.[0-9]+(?:\.[0-9]+)?)/);
+    const versionName = versionMatch?.[1] || "";
+
+    // Detect target SDK
+    const sdkMatch = rawText.match(/targetSdkVersion["\s:=]+(\d+)/);
+    const targetSdk = sdkMatch ? parseInt(sdkMatch[1]) : undefined;
+    const compileSdkMatch = rawText.match(/compileSdkVersion["\s:=]+(\d+)/);
+    const compileSdk = compileSdkMatch ? parseInt(compileSdkMatch[1]) : undefined;
+
+    return { sha256, urls, domains: [...domainSet], ips, permissions, packageName, apiKeys: [...new Set(apiKeys)].slice(0, 5), versionName, targetSdk, compileSdk };
+  }, []);
+
+  const handleFileSelect = useCallback(async (file: File) => {
+    if (!file.name.endsWith(".apk") && !file.name.endsWith(".aab")) {
+      toast({ title: "Invalid File", description: "Only .apk and .aab files are supported.", variant: "destructive" });
+      return;
+    }
+
+    setUploadedFile(file.name);
+    form.setValue("sampleName", file.name);
+    toast({ title: "Extracting metadata...", description: `Analyzing ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)` });
+
+    try {
+      const meta = await extractMetadata(file);
+
+      form.setValue("sha256", meta.sha256);
+      if (meta.packageName) form.setValue("packageName", meta.packageName);
+      if (meta.versionName) form.setValue("versionName", meta.versionName);
+      if (meta.targetSdk) form.setValue("targetSdk", meta.targetSdk);
+      if (meta.compileSdk) form.setValue("compileSdk", meta.compileSdk);
+      if (meta.permissions.length) form.setValue("permissions", meta.permissions.join("\n"));
+      if (meta.urls.length) form.setValue("urls", meta.urls.join("\n"));
+      if (meta.domains.length) form.setValue("domains", meta.domains.join("\n"));
+      if (meta.ips.length) form.setValue("ipAddresses", meta.ips.join("\n"));
+      if (meta.apiKeys.length) form.setValue("apiKeys", meta.apiKeys.join("\n"));
+
+      const extracted = [
+        meta.permissions.length && `${meta.permissions.length} permissions`,
+        meta.urls.length && `${meta.urls.length} URLs`,
+        meta.domains.length && `${meta.domains.length} domains`,
+        meta.ips.length && `${meta.ips.length} IPs`,
+      ].filter(Boolean).join(", ");
+
+      toast({ title: "Metadata Extracted", description: extracted || "Basic metadata extracted. Fill in additional details manually." });
+    } catch {
+      // Fallback: just set the hash from filename
       const hashSeed = file.name + file.size + file.lastModified;
       let hash = "";
-      for (let i = 0; i < 64; i++) {
-        hash += "0123456789abcdef"[hashSeed.charCodeAt(i % hashSeed.length) % 16];
-      }
+      for (let i = 0; i < 64; i++) hash += "0123456789abcdef"[hashSeed.charCodeAt(i % hashSeed.length) % 16];
       form.setValue("sha256", hash);
-      toast({ title: "APK Received", description: `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)` });
-    } else {
-      toast({ title: "Invalid File", description: "Only .apk and .aab files are supported.", variant: "destructive" });
+      toast({ title: "APK Received", description: "Could not auto-extract metadata. Please fill in details manually." });
     }
-  }, [form, toast]);
+  }, [form, toast, extractMetadata]);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) handleFileSelect(file);
+    if (file) await handleFileSelect(file);
   }, [handleFileSelect]);
 
-  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInputChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleFileSelect(file);
-    // Reset input so the same file can be selected again
+    if (file) await handleFileSelect(file);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, [handleFileSelect]);
 
