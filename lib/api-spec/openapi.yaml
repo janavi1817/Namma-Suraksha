@@ -1,0 +1,847 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: APK Fraud Intelligence Investigator API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: investigations
+    description: APK forensic investigations
+  - name: campaigns
+    description: Threat campaigns and clusters
+  - name: dashboard
+    description: Aggregated dashboard intelligence
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /investigations:
+    get:
+      operationId: listInvestigations
+      tags: [investigations]
+      summary: List investigations
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: riskLevel
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [Low, Medium, High, Critical]
+      responses:
+        "200":
+          description: List of investigations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InvestigationSummary"
+    post:
+      operationId: createInvestigation
+      tags: [investigations]
+      summary: Submit APK forensic data for autonomous investigation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvestigationInput"
+      responses:
+        "201":
+          description: Investigation created and analyzed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investigation"
+
+  /investigations/{id}:
+    get:
+      operationId: getInvestigation
+      tags: [investigations]
+      summary: Get full investigation details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Investigation details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investigation"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteInvestigation
+      tags: [investigations]
+      summary: Delete an investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /investigations/{id}/iocs:
+    get:
+      operationId: getInvestigationIocs
+      tags: [investigations]
+      summary: Get IOCs for a single investigation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: IOC list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ioc"
+
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [campaigns]
+      summary: List threat campaigns
+      responses:
+        "200":
+          description: Campaign clusters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Campaign"
+
+  /campaigns/{clusterId}:
+    get:
+      operationId: getCampaign
+      tags: [campaigns]
+      summary: Campaign detail
+      parameters:
+        - name: clusterId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Campaign with members
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: High level fleet statistics
+      responses:
+        "200":
+          description: Stats payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/recent:
+    get:
+      operationId: getRecentInvestigations
+      tags: [dashboard]
+      summary: Recently submitted investigations
+      responses:
+        "200":
+          description: Recent investigations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InvestigationSummary"
+
+  /dashboard/risk-distribution:
+    get:
+      operationId: getRiskDistribution
+      tags: [dashboard]
+      summary: Counts of investigations by risk level
+      responses:
+        "200":
+          description: Distribution
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RiskBucket"
+
+  /dashboard/top-iocs:
+    get:
+      operationId: getTopIocs
+      tags: [dashboard]
+      summary: Most frequently observed IOCs across all investigations
+      responses:
+        "200":
+          description: Top IOCs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopIoc"
+
+  /dashboard/behaviors:
+    get:
+      operationId: getTopBehaviors
+      tags: [dashboard]
+      summary: Most frequent malware behaviors observed
+      responses:
+        "200":
+          description: Top behaviors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BehaviorCount"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    CreateInvestigationInput:
+      type: object
+      properties:
+        sampleName:
+          type: string
+          description: Display name for this APK sample (e.g. com.bank.fake-1.2.apk)
+        sha256:
+          type: string
+        fuzzyHash:
+          type: ["string", "null"]
+        packageName:
+          type: ["string", "null"]
+        versionName:
+          type: ["string", "null"]
+        targetSdk:
+          type: ["integer", "null"]
+        compileSdk:
+          type: ["integer", "null"]
+        permissions:
+          type: array
+          items:
+            type: string
+        codeSnippets:
+          type: ["string", "null"]
+          description: Decompiled Java/Kotlin snippets
+        urls:
+          type: array
+          items:
+            type: string
+        domains:
+          type: array
+          items:
+            type: string
+        ipAddresses:
+          type: array
+          items:
+            type: string
+        apiKeys:
+          type: array
+          items:
+            type: string
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+        certificateFingerprint:
+          type: ["string", "null"]
+        certificateSubject:
+          type: ["string", "null"]
+        certificateIssuer:
+          type: ["string", "null"]
+        certificateNotBefore:
+          type: ["string", "null"]
+        certificateNotAfter:
+          type: ["string", "null"]
+        virusTotalScore:
+          type: ["integer", "null"]
+        virusTotalTotal:
+          type: ["integer", "null"]
+        abuseIpdbScore:
+          type: ["integer", "null"]
+        urlScanScore:
+          type: ["integer", "null"]
+        clusterId:
+          type: ["string", "null"]
+        anomalyScore:
+          type: ["number", "null"]
+        gnnMaliciousProb:
+          type: ["number", "null"]
+        pageRankScore:
+          type: ["number", "null"]
+      required:
+        - sampleName
+        - sha256
+        - permissions
+        - urls
+        - domains
+        - ipAddresses
+        - apiKeys
+        - phoneNumbers
+
+    InvestigationSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        sampleName:
+          type: string
+        sha256:
+          type: string
+        packageName:
+          type: ["string", "null"]
+        verdict:
+          type: string
+        riskLevel:
+          type: string
+        riskScore:
+          type: integer
+        confidence:
+          type: string
+        primaryThreatType:
+          type: string
+        clusterId:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - sampleName
+        - sha256
+        - verdict
+        - riskLevel
+        - riskScore
+        - confidence
+        - primaryThreatType
+        - createdAt
+
+    Investigation:
+      type: object
+      properties:
+        id:
+          type: integer
+        sampleName:
+          type: string
+        sha256:
+          type: string
+        fuzzyHash:
+          type: ["string", "null"]
+        packageName:
+          type: ["string", "null"]
+        versionName:
+          type: ["string", "null"]
+        targetSdk:
+          type: ["integer", "null"]
+        compileSdk:
+          type: ["integer", "null"]
+        permissions:
+          type: array
+          items:
+            type: string
+        codeSnippets:
+          type: ["string", "null"]
+        urls:
+          type: array
+          items:
+            type: string
+        domains:
+          type: array
+          items:
+            type: string
+        ipAddresses:
+          type: array
+          items:
+            type: string
+        apiKeys:
+          type: array
+          items:
+            type: string
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+        certificateFingerprint:
+          type: ["string", "null"]
+        certificateSubject:
+          type: ["string", "null"]
+        certificateIssuer:
+          type: ["string", "null"]
+        certificateNotBefore:
+          type: ["string", "null"]
+        certificateNotAfter:
+          type: ["string", "null"]
+        virusTotalScore:
+          type: ["integer", "null"]
+        virusTotalTotal:
+          type: ["integer", "null"]
+        abuseIpdbScore:
+          type: ["integer", "null"]
+        urlScanScore:
+          type: ["integer", "null"]
+        clusterId:
+          type: ["string", "null"]
+        anomalyScore:
+          type: ["number", "null"]
+        gnnMaliciousProb:
+          type: ["number", "null"]
+        pageRankScore:
+          type: ["number", "null"]
+        verdict:
+          type: string
+        riskLevel:
+          type: string
+        riskScore:
+          type: integer
+        confidence:
+          type: string
+        primaryThreatType:
+          type: string
+        analysis:
+          $ref: "#/components/schemas/AnalysisReport"
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - sampleName
+        - sha256
+        - permissions
+        - urls
+        - domains
+        - ipAddresses
+        - apiKeys
+        - phoneNumbers
+        - verdict
+        - riskLevel
+        - riskScore
+        - confidence
+        - primaryThreatType
+        - analysis
+        - createdAt
+
+    AnalysisReport:
+      type: object
+      properties:
+        executiveSummary:
+          type: string
+        plainEnglishBrief:
+          type: string
+        behaviors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Behavior"
+        codeFindings:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeFinding"
+        permissionAbuse:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionAbuse"
+        networkInfrastructure:
+          $ref: "#/components/schemas/NetworkInfrastructure"
+        campaign:
+          $ref: "#/components/schemas/CampaignAttribution"
+        rootOffender:
+          $ref: "#/components/schemas/RootOffender"
+        riskMatrix:
+          $ref: "#/components/schemas/RiskMatrix"
+        prediction:
+          $ref: "#/components/schemas/ThreatPrediction"
+        mitreTactics:
+          type: array
+          items:
+            $ref: "#/components/schemas/MitreTactic"
+        iocs:
+          type: array
+          items:
+            $ref: "#/components/schemas/Ioc"
+        detectionRules:
+          $ref: "#/components/schemas/DetectionRules"
+        reasoningChain:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReasoningStep"
+      required:
+        - executiveSummary
+        - plainEnglishBrief
+        - behaviors
+        - codeFindings
+        - permissionAbuse
+        - networkInfrastructure
+        - campaign
+        - rootOffender
+        - riskMatrix
+        - prediction
+        - mitreTactics
+        - iocs
+        - detectionRules
+        - reasoningChain
+
+    Behavior:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        evidence:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: integer
+      required: [type, title, description, evidence, confidence]
+
+    CodeFinding:
+      type: object
+      properties:
+        title:
+          type: string
+        snippet:
+          type: string
+        meaning:
+          type: string
+        severity:
+          type: string
+      required: [title, snippet, meaning, severity]
+
+    PermissionAbuse:
+      type: object
+      properties:
+        permission:
+          type: string
+        riskLevel:
+          type: string
+        explanation:
+          type: string
+      required: [permission, riskLevel, explanation]
+
+    NetworkInfrastructure:
+      type: object
+      properties:
+        summary:
+          type: string
+        c2Domains:
+          type: array
+          items:
+            type: string
+        c2Ips:
+          type: array
+          items:
+            type: string
+        endpoints:
+          type: array
+          items:
+            type: string
+        infrastructurePatterns:
+          type: array
+          items:
+            type: string
+      required: [summary, c2Domains, c2Ips, endpoints, infrastructurePatterns]
+
+    CampaignAttribution:
+      type: object
+      properties:
+        clusterId:
+          type: string
+        clusterName:
+          type: string
+        rationale:
+          type: string
+        relatedSampleCount:
+          type: integer
+        sharedIndicators:
+          type: array
+          items:
+            type: string
+        attackVector:
+          type: string
+        isNewCampaign:
+          type: boolean
+      required: [clusterId, clusterName, rationale, relatedSampleCount, sharedIndicators, attackVector, isNewCampaign]
+
+    RootOffender:
+      type: object
+      properties:
+        actorName:
+          type: string
+        actorType:
+          type: string
+        isRootOffender:
+          type: boolean
+        confidence:
+          type: string
+        evidence:
+          type: array
+          items:
+            type: string
+        historicalAssociations:
+          type: array
+          items:
+            type: string
+      required: [actorName, actorType, isRootOffender, confidence, evidence, historicalAssociations]
+
+    RiskMatrix:
+      type: object
+      properties:
+        severity:
+          type: string
+        impact:
+          type: integer
+        likelihood:
+          type: integer
+        composite:
+          type: integer
+        methodology:
+          type: string
+        cvssVector:
+          type: ["string", "null"]
+      required: [severity, impact, likelihood, composite, methodology]
+
+    ThreatPrediction:
+      type: object
+      properties:
+        variantLikelihood:
+          type: string
+        infrastructureReuse:
+          type: string
+        targetRegions:
+          type: array
+          items:
+            type: string
+        targetIndustries:
+          type: array
+          items:
+            type: string
+        predictedEvolution:
+          type: string
+        proactiveDefenses:
+          type: array
+          items:
+            type: string
+      required: [variantLikelihood, infrastructureReuse, targetRegions, targetIndustries, predictedEvolution, proactiveDefenses]
+
+    MitreTactic:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required: [id, name, description]
+
+    Ioc:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        context:
+          type: string
+      required: [type, value, context]
+
+    DetectionRules:
+      type: object
+      properties:
+        yara:
+          type: string
+        suricata:
+          type: string
+        siemQuery:
+          type: string
+        edrRule:
+          type: string
+        blocklistDomains:
+          type: array
+          items:
+            type: string
+        blocklistIps:
+          type: array
+          items:
+            type: string
+        remediationSteps:
+          type: array
+          items:
+            type: string
+      required: [yara, suricata, siemQuery, edrRule, blocklistDomains, blocklistIps, remediationSteps]
+
+    ReasoningStep:
+      type: object
+      properties:
+        step:
+          type: string
+        observation:
+          type: string
+      required: [step, observation]
+
+    Campaign:
+      type: object
+      properties:
+        clusterId:
+          type: string
+        clusterName:
+          type: string
+        sampleCount:
+          type: integer
+        topRiskLevel:
+          type: string
+        averageRiskScore:
+          type: integer
+        firstSeen:
+          type: string
+          format: date-time
+        lastSeen:
+          type: string
+          format: date-time
+      required: [clusterId, clusterName, sampleCount, topRiskLevel, averageRiskScore, firstSeen, lastSeen]
+
+    CampaignDetail:
+      type: object
+      properties:
+        clusterId:
+          type: string
+        clusterName:
+          type: string
+        sampleCount:
+          type: integer
+        topRiskLevel:
+          type: string
+        averageRiskScore:
+          type: integer
+        firstSeen:
+          type: string
+          format: date-time
+        lastSeen:
+          type: string
+          format: date-time
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvestigationSummary"
+      required: [clusterId, clusterName, sampleCount, topRiskLevel, averageRiskScore, firstSeen, lastSeen, members]
+
+    DashboardStats:
+      type: object
+      properties:
+        totalInvestigations:
+          type: integer
+        criticalCount:
+          type: integer
+        highCount:
+          type: integer
+        mediumCount:
+          type: integer
+        lowCount:
+          type: integer
+        uniqueCampaigns:
+          type: integer
+        uniqueC2Domains:
+          type: integer
+        averageRiskScore:
+          type: integer
+      required: [totalInvestigations, criticalCount, highCount, mediumCount, lowCount, uniqueCampaigns, uniqueC2Domains, averageRiskScore]
+
+    RiskBucket:
+      type: object
+      properties:
+        riskLevel:
+          type: string
+        count:
+          type: integer
+      required: [riskLevel, count]
+
+    TopIoc:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+        occurrences:
+          type: integer
+      required: [type, value, occurrences]
+
+    BehaviorCount:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        count:
+          type: integer
+      required: [type, title, count]
