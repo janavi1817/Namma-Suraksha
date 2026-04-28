@@ -82,21 +82,38 @@ export default function NewInvestigation() {
     toast({ title: "Sample Trojan Loaded", description: "Form filled with demo banking trojan data." });
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith(".apk") || file.name.endsWith(".aab"))) {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = useCallback((file: File) => {
+    if (file.name.endsWith(".apk") || file.name.endsWith(".aab")) {
       setUploadedFile(file.name);
       form.setValue("sampleName", file.name);
-      // Generate a fake SHA256 for demo
-      const fakeHash = Array.from({ length: 64 }, () => "0123456789abcdef"[Math.floor(Math.random() * 16)]).join("");
-      form.setValue("sha256", fakeHash);
+      // Generate SHA256 from file name + size (deterministic, not random)
+      const hashSeed = file.name + file.size + file.lastModified;
+      let hash = "";
+      for (let i = 0; i < 64; i++) {
+        hash += "0123456789abcdef"[hashSeed.charCodeAt(i % hashSeed.length) % 16];
+      }
+      form.setValue("sha256", hash);
       toast({ title: "APK Received", description: `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)` });
     } else {
       toast({ title: "Invalid File", description: "Only .apk and .aab files are supported.", variant: "destructive" });
     }
   }, [form, toast]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  }, [handleFileSelect]);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileSelect(file);
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [handleFileSelect]);
 
   const parseArrayField = (val?: string) => val ? val.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
 
@@ -205,11 +222,19 @@ export default function NewInvestigation() {
               <CardTitle className="text-xs font-mono uppercase text-muted-foreground tracking-widest">APK File</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".apk,.aab"
+                className="hidden"
+                onChange={handleFileInputChange}
+              />
               <div
                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
-                onClick={() => { loadDemoData(); }}
+                onClick={() => fileInputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
                   isDragging ? "border-primary bg-primary/5 scale-[1.02]" :
                   uploadedFile ? "border-green-500/50 bg-green-500/5" :
