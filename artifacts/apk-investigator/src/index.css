@@ -71,89 +71,88 @@
 }
 
 :root {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 6.5%;
-  --card-foreground: 210 40% 98%;
-  --card-border: 217.2 32.6% 17.5%;
-  --popover: 222.2 84% 6.5%;
-  --popover-foreground: 210 40% 98%;
-  --popover-border: 217.2 32.6% 17.5%;
-  --primary: 191 97% 40%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --background: 220 25% 6%;
+  --foreground: 210 40% 96%;
+  --card: 220 25% 8%;
+  --card-foreground: 210 40% 96%;
+  --card-border: 220 20% 16%;
+  --popover: 220 25% 8%;
+  --popover-foreground: 210 40% 96%;
+  --popover-border: 220 20% 16%;
+  --primary: 200 100% 50%;
+  --primary-foreground: 220 25% 6%;
+  --secondary: 220 20% 14%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 220 20% 14%;
+  --muted-foreground: 215 15% 55%;
+  --accent: 220 20% 14%;
+  --accent-foreground: 210 40% 96%;
+  --destructive: 0 72% 51%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 191 97% 40%;
+  --border: 220 20% 16%;
+  --input: 220 20% 14%;
+  --ring: 200 100% 50%;
 
-  --sidebar: 222.2 84% 4.9%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-primary: 191 97% 40%;
-  --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-ring: 191 97% 40%;
+  --sidebar: 220 30% 5%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-border: 220 20% 14%;
+  --sidebar-primary: 200 100% 50%;
+  --sidebar-primary-foreground: 220 25% 6%;
+  --sidebar-accent: 220 20% 12%;
+  --sidebar-accent-foreground: 210 40% 96%;
+  --sidebar-ring: 200 100% 50%;
 
-  --chart-1: 191 97% 40%;
+  --chart-1: 200 100% 50%;
   --chart-2: 0 84% 60%;
   --chart-3: 32 100% 50%;
   --chart-4: 45 100% 50%;
-  --chart-5: 210 40% 98%;
+  --chart-5: 160 84% 39%;
 
-  --risk-critical: 350 89% 60%;
+  --risk-critical: 0 84% 60%;
   --risk-high: 25 95% 53%;
   --risk-medium: 45 93% 47%;
-  --risk-low: 191 97% 40%;
+  --risk-low: 160 84% 39%;
 
   --app-font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --app-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  --radius: 0.3rem;
+  --app-font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+  --radius: 0.5rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 6.5%;
-  --card-foreground: 210 40% 98%;
-  --card-border: 217.2 32.6% 17.5%;
-  --popover: 222.2 84% 6.5%;
-  --popover-foreground: 210 40% 98%;
-  --popover-border: 217.2 32.6% 17.5%;
-  --primary: 191 97% 40%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --background: 220 25% 6%;
+  --foreground: 210 40% 96%;
+  --card: 220 25% 8%;
+  --card-foreground: 210 40% 96%;
+  --card-border: 220 20% 16%;
+  --popover: 220 25% 8%;
+  --popover-foreground: 210 40% 96%;
+  --popover-border: 220 20% 16%;
+  --primary: 200 100% 50%;
+  --primary-foreground: 220 25% 6%;
+  --secondary: 220 20% 14%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 220 20% 14%;
+  --muted-foreground: 215 15% 55%;
+  --accent: 220 20% 14%;
+  --accent-foreground: 210 40% 96%;
+  --destructive: 0 72% 51%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 191 97% 40%;
-  --sidebar: 222.2 84% 4.9%;
-  --sidebar-foreground: 210 40% 98%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-primary: 191 97% 40%;
-  --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-ring: 191 97% 40%;
-
-  --chart-1: 191 97% 40%;
+  --border: 220 20% 16%;
+  --input: 220 20% 14%;
+  --ring: 200 100% 50%;
+  --sidebar: 220 30% 5%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-border: 220 20% 14%;
+  --sidebar-primary: 200 100% 50%;
+  --sidebar-primary-foreground: 220 25% 6%;
+  --sidebar-accent: 220 20% 12%;
+  --sidebar-accent-foreground: 210 40% 96%;
+  --sidebar-ring: 200 100% 50%;
+  --chart-1: 200 100% 50%;
   --chart-2: 0 84% 60%;
   --chart-3: 32 100% 50%;
   --chart-4: 45 100% 50%;
-  --chart-5: 210 40% 98%;
+  --chart-5: 160 84% 39%;
 }
 
 @layer base {
@@ -165,15 +164,15 @@
   }
 }
 
-/* RAKSHAK custom animations */
+/* RAKSHAK Cybersecurity UI animations */
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 149, 255, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(0, 149, 255, 0.5), 0 0 50px rgba(0, 149, 255, 0.1); }
 }
 
 @keyframes float {
@@ -182,18 +181,58 @@
 }
 
 @keyframes scan-line {
-  0% { top: 0; }
-  100% { top: 100%; }
+  0% { top: 0; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
 }
 
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+@keyframes slide-in-right {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes slide-in-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
+
+@keyframes count-up {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(0, 149, 255, 0.2); }
+  50% { border-color: rgba(0, 149, 255, 0.6); }
+}
+
+.animate-shimmer { animation: shimmer 2s linear infinite; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+.animate-slide-in { animation: slide-in-right 0.4s ease-out; }
+.animate-slide-up { animation: slide-in-up 0.3s ease-out; }
+.animate-count { animation: count-up 0.5s ease-out; }
+.animate-border-glow { animation: border-glow 3s ease-in-out infinite; }
+
+/* Cybersecurity card hover effect */
+.cyber-card {
+  transition: all 0.3s ease;
+  border: 1px solid hsl(220 20% 16%);
+}
+.cyber-card:hover {
+  border-color: hsl(200 100% 50% / 0.3);
+  box-shadow: 0 0 20px hsl(200 100% 50% / 0.1), inset 0 1px 0 hsl(200 100% 50% / 0.1);
+}
+
+/* Staggered animation delays for lists */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }

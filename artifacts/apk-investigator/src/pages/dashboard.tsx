@@ -1,28 +1,69 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useGetDashboardStats, getGetDashboardStatsQueryKey, useGetRiskDistribution, getGetRiskDistributionQueryKey, useGetRecentInvestigations, getGetRecentInvestigationsQueryKey, useGetTopIocs, getGetTopIocsQueryKey, useGetTopBehaviors, getGetTopBehaviorsQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-import { Activity, AlertTriangle, ShieldAlert, Target, Network, BugPlay, Upload, MapPin } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
+import { Activity, AlertTriangle, ShieldAlert, Target, Network, BugPlay, Upload, MapPin, TrendingUp, Zap } from "lucide-react";
 import { RiskBadge } from "@/components/ui/risk-badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/auth-context";
 import { getDashboardStatsFromDataset, getRiskDistributionFromDataset, getRecentInvestigationsFromDataset, getTopIocsFromDataset, getTopBehaviorsFromDataset } from "@/lib/fraud-data";
 
-const RISK_COLORS = { Critical: "#ff3333", High: "#ff8800", Medium: "#ffcc00", Low: "#00cc66" };
+const RISK_COLORS = { Critical: "#ef4444", High: "#f97316", Medium: "#eab308", Low: "#22c55e" };
+
+// Animated counter hook
+function useAnimatedCount(target: number, duration = 1200) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    let start = 0;
+    const step = Math.ceil(target / (duration / 16));
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { setCount(target); clearInterval(timer); }
+      else setCount(start);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [target, duration]);
+  return count;
+}
 
 const WEEKLY_TREND = [
-  { day: "Mon", count: 12 }, { day: "Tue", count: 19 }, { day: "Wed", count: 8 },
-  { day: "Thu", count: 24 }, { day: "Fri", count: 15 }, { day: "Sat", count: 21 }, { day: "Sun", count: 11 },
+  { day: "Mon", count: 12, prev: 8 }, { day: "Tue", count: 19, prev: 14 }, { day: "Wed", count: 8, prev: 11 },
+  { day: "Thu", count: 24, prev: 18 }, { day: "Fri", count: 15, prev: 12 }, { day: "Sat", count: 21, prev: 16 }, { day: "Sun", count: 11, prev: 9 },
+];
+
+const THREAT_RADAR = [
+  { type: "Banking Trojan", score: 85 }, { type: "SMS Stealer", score: 72 },
+  { type: "Credential Theft", score: 65 }, { type: "Crypto Drainer", score: 45 },
+  { type: "POS Malware", score: 38 }, { type: "Spyware", score: 55 },
 ];
 
 const DISTRICT_DATA = [
-  { name: "Bengaluru", cases: 47, color: "#ff3333" }, { name: "Mysuru", cases: 23, color: "#ff8800" },
-  { name: "Mangaluru", cases: 18, color: "#ffcc00" }, { name: "Hubli", cases: 8, color: "#00cc66" },
-  { name: "Belagavi", cases: 12, color: "#ff8800" }, { name: "Kalaburagi", cases: 6, color: "#00cc66" },
+  { name: "Bengaluru", cases: 47, color: "#ef4444" }, { name: "Mysuru", cases: 23, color: "#f97316" },
+  { name: "Mangaluru", cases: 18, color: "#eab308" }, { name: "Hubli", cases: 8, color: "#22c55e" },
+  { name: "Belagavi", cases: 12, color: "#f97316" }, { name: "Kalaburagi", cases: 6, color: "#22c55e" },
 ];
+
+function StatCard({ icon: Icon, label, value, color, delay }: { icon: any; label: string; value: number; color: string; delay: number }) {
+  const animated = useAnimatedCount(value);
+  return (
+    <Card className={`cyber-card animate-slide-up overflow-hidden relative stagger-${delay + 1}`}>
+      <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: color }} />
+      <CardContent className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: color + "15" }}>
+            <Icon className="h-4 w-4" style={{ color }} />
+          </div>
+        </div>
+        <div className="text-3xl font-bold font-mono animate-count" style={{ color }}>{animated}</div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Dashboard() {
   const { officer } = useAuth();
@@ -54,88 +95,66 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Stat Cards */}
+      {/* Stat Cards — animated counters */}
       {!stats ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32 w-full" />)}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-red-500">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">High Risk APKs</CardTitle>
-              <ShieldAlert className="h-4 w-4 text-destructive" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-destructive">{stats.criticalCount}</div>
-              <p className="text-xs text-muted-foreground mt-1">Requires immediate action</p>
-            </CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-yellow-500">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Campaigns</CardTitle>
-              <Activity className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-yellow-500">{stats.uniqueCampaigns}</div>
-              <p className="text-xs text-muted-foreground mt-1">Ongoing fraud operations</p>
-            </CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total APKs Scanned</CardTitle>
-              <Target className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-500">{stats.totalInvestigations}</div>
-              <p className="text-xs text-muted-foreground mt-1">Samples processed</p>
-            </CardContent>
-          </Card>
-          <Card className="border-l-4 border-l-purple-500">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Linked Gangs</CardTitle>
-              <Network className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-500">{stats.uniqueCampaigns}</div>
-              <p className="text-xs text-muted-foreground mt-1">Criminal networks identified</p>
-            </CardContent>
-          </Card>
+          <StatCard icon={ShieldAlert} label="High Risk APKs" value={stats.criticalCount} color="#ef4444" delay={0} />
+          <StatCard icon={Activity} label="Active Campaigns" value={stats.uniqueCampaigns} color="#eab308" delay={1} />
+          <StatCard icon={Target} label="Total APKs Scanned" value={stats.totalInvestigations} color="#0095ff" delay={2} />
+          <StatCard icon={Network} label="Linked Gangs" value={stats.uniqueCampaigns} color="#a855f7" delay={3} />
         </div>
       )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Weekly Trend */}
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-sm font-mono uppercase">Fraud Trend This Week</CardTitle></CardHeader>
-          <CardContent className="h-[250px]">
+        {/* Weekly Trend — Area Chart */}
+        <Card className="lg:col-span-2 cyber-card animate-slide-up">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Fraud Trend This Week</CardTitle>
+            <span className="text-xs text-muted-foreground font-mono">Live</span>
+          </CardHeader>
+          <CardContent className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={WEEKLY_TREND}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="day" tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
-                <YAxis tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))", borderRadius: "0.3rem" }} />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
+              <AreaChart data={WEEKLY_TREND}>
+                <defs>
+                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0095ff" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#0095ff" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorPrev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 20% 16%)" />
+                <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(215 15% 55%)" }} />
+                <YAxis tick={{ fontSize: 11, fill: "hsl(215 15% 55%)" }} />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(220 25% 8%)", borderColor: "hsl(220 20% 16%)", borderRadius: "8px", fontSize: 12 }} />
+                <Area type="monotone" dataKey="prev" stroke="#6366f1" fill="url(#colorPrev)" strokeWidth={2} name="Last Week" animationDuration={1500} />
+                <Area type="monotone" dataKey="count" stroke="#0095ff" fill="url(#colorCount)" strokeWidth={2} name="This Week" animationDuration={2000} />
+              </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Risk Distribution */}
-        <Card>
-          <CardHeader><CardTitle className="text-sm font-mono uppercase">Risk Distribution</CardTitle></CardHeader>
-          <CardContent className="h-[250px]">
+        {/* Risk Distribution — Animated Pie */}
+        <Card className="cyber-card animate-slide-up">
+          <CardHeader><CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><Zap className="h-4 w-4 text-primary" /> Risk Distribution</CardTitle></CardHeader>
+          <CardContent className="h-[260px]">
             {!riskDist ? <Skeleton className="w-full h-full" /> : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={50} outerRadius={70} paddingAngle={2} dataKey="count" nameKey="riskLevel">
+                  <Pie data={riskDist} cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={3} dataKey="count" nameKey="riskLevel" animationBegin={200} animationDuration={1500}>
                     {riskDist.map((entry: any, i: number) => (
                       <Cell key={i} fill={RISK_COLORS[entry.riskLevel as keyof typeof RISK_COLORS] || RISK_COLORS.Low} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))" }} />
-                  <Legend />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(220 25% 8%)", borderColor: "hsl(220 20% 16%)", borderRadius: "8px" }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
                 </PieChart>
               </ResponsiveContainer>
             )}
@@ -143,10 +162,24 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Bottom Row */}
+      {/* Threat Radar + Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Threat Radar */}
+        <Card className="cyber-card animate-slide-up">
+          <CardHeader><CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><ShieldAlert className="h-4 w-4 text-primary" /> Threat Radar</CardTitle></CardHeader>
+          <CardContent className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={THREAT_RADAR} cx="50%" cy="50%" outerRadius="70%">
+                <PolarGrid stroke="hsl(220 20% 16%)" />
+                <PolarAngleAxis dataKey="type" tick={{ fontSize: 10, fill: "hsl(215 15% 55%)" }} />
+                <Radar name="Threat Level" dataKey="score" stroke="#0095ff" fill="#0095ff" fillOpacity={0.2} animationDuration={2000} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
         {/* Latest Alerts */}
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 cyber-card animate-slide-up">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-mono uppercase">Latest Alerts</CardTitle>
             <Link href="/investigations" className="text-xs text-primary hover:underline font-mono uppercase">View All</Link>
@@ -179,7 +212,7 @@ export default function Dashboard() {
         </Card>
 
         {/* District Heatmap */}
-        <Card>
+        <Card className="cyber-card animate-slide-up">
           <CardHeader>
             <CardTitle className="text-sm font-mono uppercase flex items-center gap-2">
               <MapPin className="h-4 w-4" /> District Heatmap
