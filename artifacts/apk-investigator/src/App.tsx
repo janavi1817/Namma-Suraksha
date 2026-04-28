@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import LoginPage from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import InvestigationsList from "@/pages/investigations/list";
@@ -20,7 +21,6 @@ const queryClient = new QueryClient();
 function ProtectedRoutes() {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) return <Redirect to="/login" />;
-
   return (
     <AppLayout>
       <Switch>
@@ -42,31 +42,25 @@ function AppRouter() {
   const { isAuthenticated } = useAuth();
   return (
     <Switch>
-      <Route path="/login">
-        {isAuthenticated ? <Redirect to="/" /> : <LoginPage />}
-      </Route>
+      <Route path="/login">{isAuthenticated ? <Redirect to="/" /> : <LoginPage />}</Route>
       <Route>{() => <ProtectedRoutes />}</Route>
     </Switch>
   );
 }
 
-function App() {
-  React.useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <AppRouter />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <AppRouter />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;

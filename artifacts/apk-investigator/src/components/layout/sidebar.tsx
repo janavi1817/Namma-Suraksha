@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Search, Network, Upload, ShieldAlert, LogOut } from "lucide-react";
+import { LayoutDashboard, Search, Network, Upload, ShieldAlert, LogOut, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useTheme } from "@/lib/theme-context";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuItem,
@@ -11,18 +12,29 @@ import {
 export function AppSidebar() {
   const [location] = useLocation();
   const { officer, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <Sidebar className="border-r border-border bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-            <ShieldAlert className="h-4 w-4 text-primary" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+              <ShieldAlert className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <div className="font-mono text-sm font-bold uppercase tracking-wider text-primary">RAKSHAK</div>
+              <div className="text-[10px] text-muted-foreground">CB/CID Intelligence</div>
+            </div>
           </div>
-          <div>
-            <div className="font-mono text-sm font-bold uppercase tracking-wider text-primary">RAKSHAK</div>
-            <div className="text-[10px] text-muted-foreground">CB/CID Intelligence</div>
-          </div>
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-8 h-8 rounded-lg flex items-center justify-center bg-muted/50 hover:bg-muted border border-border/50 transition-all hover:scale-105"
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-blue-600" />}
+          </button>
         </div>
         {officer && (
           <div className="mt-3 p-2 rounded bg-muted/30 border border-border/50">

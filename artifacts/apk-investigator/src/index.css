@@ -155,6 +155,43 @@
   --chart-5: 160 84% 39%;
 }
 
+.light {
+  --background: 210 20% 98%;
+  --foreground: 220 25% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 25% 10%;
+  --card-border: 220 13% 88%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 25% 10%;
+  --popover-border: 220 13% 88%;
+  --primary: 210 100% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 94%;
+  --secondary-foreground: 220 25% 10%;
+  --muted: 220 14% 94%;
+  --muted-foreground: 220 10% 46%;
+  --accent: 220 14% 94%;
+  --accent-foreground: 220 25% 10%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 88%;
+  --input: 220 13% 88%;
+  --ring: 210 100% 45%;
+  --sidebar: 220 14% 96%;
+  --sidebar-foreground: 220 25% 10%;
+  --sidebar-border: 220 13% 88%;
+  --sidebar-primary: 210 100% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 92%;
+  --sidebar-accent-foreground: 220 25% 10%;
+  --sidebar-ring: 210 100% 45%;
+  --chart-1: 210 100% 45%;
+  --chart-2: 0 84% 60%;
+  --chart-3: 32 100% 50%;
+  --chart-4: 45 93% 47%;
+  --chart-5: 160 84% 39%;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -222,11 +259,15 @@
 /* Cybersecurity card hover effect */
 .cyber-card {
   transition: all 0.3s ease;
-  border: 1px solid hsl(220 20% 16%);
+  border: 1px solid hsl(var(--border));
 }
-.cyber-card:hover {
+.dark .cyber-card:hover {
   border-color: hsl(200 100% 50% / 0.3);
   box-shadow: 0 0 20px hsl(200 100% 50% / 0.1), inset 0 1px 0 hsl(200 100% 50% / 0.1);
+}
+.light .cyber-card:hover {
+  border-color: hsl(210 100% 45% / 0.4);
+  box-shadow: 0 4px 20px hsl(210 100% 45% / 0.1), 0 1px 3px hsl(0 0% 0% / 0.05);
 }
 
 /* Staggered animation delays for lists */
