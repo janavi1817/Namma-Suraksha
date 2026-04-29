@@ -59,39 +59,8 @@ const DISTRICT_DATA = [
   { name: "Chitradurga", cases: 6, color: "#22c55e", x: 150, y: 160 },
 ];
 
-// Karnataka district regions with simplified boundary paths
-const KA_DISTRICTS = [
-  { id: "bidar", name: "Bidar", path: "M218,18 L240,15 L252,28 L248,42 L230,45 L218,35Z", cx: 235, cy: 30 },
-  { id: "kalaburagi", name: "Kalaburagi", path: "M218,35 L230,45 L248,42 L260,55 L255,72 L235,75 L215,68 L205,52Z", cx: 233, cy: 58 },
-  { id: "raichur", name: "Raichur", path: "M205,52 L215,68 L235,75 L230,92 L210,98 L192,90 L188,72Z", cx: 212, cy: 78 },
-  { id: "ballari", name: "Ballari", path: "M170,78 L188,72 L192,90 L210,98 L205,115 L185,120 L168,110 L162,92Z", cx: 186, cy: 98 },
-  { id: "belagavi", name: "Belagavi", path: "M55,65 L78,55 L98,62 L105,80 L95,98 L72,102 L55,92 L48,78Z", cx: 78, cy: 80 },
-  { id: "dharwad", name: "Hubli-Dharwad", path: "M98,62 L118,58 L132,68 L135,88 L120,98 L105,95 L95,98 L105,80Z", cx: 115, cy: 80 },
-  { id: "gadag", name: "Gadag", path: "M132,68 L152,62 L165,72 L162,92 L145,98 L135,88Z", cx: 148, cy: 80 },
-  { id: "haveri", name: "Haveri", path: "M105,95 L120,98 L135,88 L145,98 L140,115 L122,120 L108,112Z", cx: 125, cy: 105 },
-  { id: "uttarakannada", name: "Uttara Kannada", path: "M48,78 L55,92 L72,102 L95,98 L105,95 L108,112 L98,132 L78,145 L55,148 L38,135 L32,112 L38,92Z", cx: 70, cy: 118 },
-  { id: "davangere", name: "Davangere", path: "M140,115 L162,110 L175,120 L172,138 L155,145 L140,138Z", cx: 157, cy: 128 },
-  { id: "shivamogga", name: "Shivamogga", path: "M98,132 L108,112 L122,120 L140,115 L140,138 L128,152 L108,155 L92,148Z", cx: 118, cy: 135 },
-  { id: "chitradurga", name: "Chitradurga", path: "M155,145 L172,138 L185,145 L188,162 L175,172 L158,168 L150,158Z", cx: 170, cy: 155 },
-  { id: "tumakuru", name: "Tumakuru", path: "M150,158 L158,168 L175,172 L180,190 L168,202 L148,198 L138,185 L140,170Z", cx: 160, cy: 182 },
-  { id: "bengaluru", name: "Bengaluru Urban", path: "M180,190 L198,185 L210,195 L208,212 L195,218 L182,215 L175,205Z", cx: 195, cy: 202 },
-  { id: "bengalururural", name: "Bengaluru Rural", path: "M168,202 L180,190 L175,205 L182,215 L175,228 L160,225 L152,215Z", cx: 170, cy: 212 },
-  { id: "hassan", name: "Hassan", path: "M108,155 L128,152 L140,170 L138,185 L125,195 L108,190 L98,175Z", cx: 120, cy: 175 },
-  { id: "udupi", name: "Udupi", path: "M55,148 L78,145 L92,148 L88,168 L72,178 L55,175 L45,162Z", cx: 68, cy: 162 },
-  { id: "dakshinakannada", name: "Mangaluru", path: "M45,162 L55,175 L72,178 L78,195 L68,212 L50,215 L38,202 L35,182Z", cx: 58, cy: 192 },
-  { id: "kodagu", name: "Kodagu", path: "M78,195 L98,190 L108,205 L102,222 L85,225 L72,218 L68,212Z", cx: 90, cy: 210 },
-  { id: "mysuru", name: "Mysuru", path: "M102,222 L108,205 L125,195 L138,205 L148,220 L142,238 L125,245 L110,240Z", cx: 125, cy: 225 },
-  { id: "mandya", name: "Mandya", path: "M138,205 L148,198 L160,205 L165,220 L155,232 L142,238 L138,225Z", cx: 150, cy: 218 },
-  { id: "chamarajanagar", name: "Chamarajanagar", path: "M125,245 L142,238 L155,248 L150,265 L135,270 L120,262Z", cx: 138, cy: 255 },
-  { id: "ramanagara", name: "Ramanagara", path: "M160,205 L168,202 L175,215 L175,228 L165,235 L155,232 L155,218Z", cx: 165, cy: 218 },
-  { id: "kolar", name: "Kolar", path: "M210,195 L228,192 L238,205 L232,218 L218,222 L208,212Z", cx: 222, cy: 208 },
-  { id: "chikkaballapur", name: "Chikkaballapur", path: "M198,175 L215,170 L228,180 L228,192 L210,195 L198,185Z", cx: 213, cy: 183 },
-  { id: "koppal", name: "Koppal", path: "M152,62 L170,58 L170,78 L162,92 L145,98Z", cx: 160, cy: 78 },
-  { id: "yadgir", name: "Yadgir", path: "M215,68 L235,75 L230,92 L210,98 L205,85Z", cx: 220, cy: 82 },
-  { id: "vijayapura", name: "Vijayapura", path: "M105,40 L132,35 L152,42 L152,62 L132,68 L118,58 L98,62 L95,50Z", cx: 125, cy: 52 },
-  { id: "bagalkot", name: "Bagalkot", path: "M132,35 L155,30 L170,38 L170,58 L152,62 L152,42Z", cx: 152, cy: 46 },
-  { id: "chikkamagaluru", name: "Chikkamagaluru", path: "M88,168 L98,175 L108,190 L98,205 L78,195 L72,178Z", cx: 90, cy: 185 },
-];
+// Karnataka map — outline with positioned district hotspots
+// Using a proper Karnataka state boundary path traced from actual map data
 
 function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
   const [selected, setSelected] = React.useState<string | null>(null);
@@ -99,96 +68,151 @@ function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
   const sorted = [...districts].sort((a, b) => b.cases - a.cases);
   const selectedD = districts.find(x => x.name === selected);
 
-  // Map district data to regions
-  const getDistrictData = (regionName: string) => districts.find(d =>
-    regionName.toLowerCase().includes(d.name.toLowerCase().split(" ")[0]) ||
-    d.name.toLowerCase().includes(regionName.toLowerCase().split(" ")[0])
-  );
+  // Accurate district center positions on a 400x480 Karnataka outline
+  const positions: Record<string, { x: number; y: number }> = {
+    "Bengaluru Urban": { x: 268, y: 340 },
+    "Bengaluru Rural": { x: 245, y: 325 },
+    "Mysuru": { x: 220, y: 395 },
+    "Mangaluru": { x: 100, y: 380 },
+    "Hubli-Dharwad": { x: 145, y: 175 },
+    "Belagavi": { x: 95, y: 130 },
+    "Kalaburagi": { x: 320, y: 95 },
+    "Ballari": { x: 255, y: 185 },
+    "Davangere": { x: 210, y: 230 },
+    "Shivamogga": { x: 165, y: 265 },
+    "Tumakuru": { x: 230, y: 295 },
+    "Raichur": { x: 295, y: 145 },
+    "Hassan": { x: 175, y: 330 },
+    "Udupi": { x: 95, y: 310 },
+    "Chitradurga": { x: 220, y: 255 },
+  };
 
   return (
     <div className="flex gap-6">
-      {/* SVG Map */}
-      <div className="flex-1">
-        <svg viewBox="0 0 280 285" className="w-full h-[350px]">
-          {KA_DISTRICTS.map((region) => {
-            const data = getDistrictData(region.name);
-            const cases = data?.cases || 0;
-            const isSel = selected === data?.name;
-            // Color by threat level
-            const fillColor = cases > 30 ? "#ef4444" : cases > 15 ? "#f97316" : cases > 8 ? "#eab308" : cases > 0 ? "#22c55e" : "var(--color-muted, #334155)";
-            const fillOpacity = isSel ? 0.9 : cases > 0 ? 0.6 : 0.2;
+      {/* Map area */}
+      <div className="flex-1 relative">
+        <svg viewBox="0 0 400 480" className="w-full h-[380px]">
+          {/* Karnataka state outline — traced from actual boundary */}
+          <path d="
+            M130,28 L155,22 L178,18 L205,22 L228,15 L255,18 L280,28 L305,35
+            L328,48 L345,65 L355,85 L362,108 L365,130 L360,155 L350,172
+            L338,185 L325,195 L318,210 L315,228 L320,248 L328,265 L335,280
+            L330,298 L318,312 L305,325 L295,340 L288,358 L278,372 L265,385
+            L248,398 L232,410 L215,420 L198,428 L178,435 L158,440 L140,442
+            L122,438 L105,428 L90,415 L78,398 L68,378 L58,355 L50,332
+            L42,308 L38,282 L35,258 L32,232 L35,208 L40,185 L48,162
+            L58,140 L68,120 L80,102 L92,85 L105,68 L118,52 L128,38 Z
+          " fill="none" stroke="var(--color-primary, #0095ff)" strokeWidth="2" opacity="0.4" />
+
+          {/* Inner glow of the state */}
+          <path d="
+            M130,28 L155,22 L178,18 L205,22 L228,15 L255,18 L280,28 L305,35
+            L328,48 L345,65 L355,85 L362,108 L365,130 L360,155 L350,172
+            L338,185 L325,195 L318,210 L315,228 L320,248 L328,265 L335,280
+            L330,298 L318,312 L305,325 L295,340 L288,358 L278,372 L265,385
+            L248,398 L232,410 L215,420 L198,428 L178,435 L158,440 L140,442
+            L122,438 L105,428 L90,415 L78,398 L68,378 L58,355 L50,332
+            L42,308 L38,282 L35,258 L32,232 L35,208 L40,185 L48,162
+            L58,140 L68,120 L80,102 L92,85 L105,68 L118,52 L128,38 Z
+          " fill="var(--color-primary, #0095ff)" opacity="0.04" />
+
+          {/* Grid lines inside state */}
+          {[100, 150, 200, 250, 300, 350].map(y => (
+            <line key={`h${y}`} x1="30" y1={y} x2="370" y2={y} stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.08" strokeDasharray="6 6" />
+          ))}
+          {[100, 150, 200, 250, 300].map(x => (
+            <line key={`v${x}`} x1={x} y1="15" x2={x} y2="445" stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.08" strokeDasharray="6 6" />
+          ))}
+
+          {/* District hotspots */}
+          {districts.map((d) => {
+            const pos = positions[d.name];
+            if (!pos) return null;
+            const r = Math.max(10, Math.min(d.cases * 0.6, 28));
+            const isSel = selected === d.name;
+            const isHot = d.cases > 20;
 
             return (
-              <g key={region.id} onClick={() => data && setSelected(isSel ? null : data.name)} style={{ cursor: data ? "pointer" : "default" }}>
-                <path d={region.path} fill={fillColor} fillOpacity={fillOpacity} stroke={isSel ? "white" : "var(--color-border, #475569)"} strokeWidth={isSel ? 2 : 0.8} className="transition-all duration-300 hover:opacity-80" />
-                {/* Pulse for high-risk */}
-                {cases > 20 && (
-                  <circle cx={region.cx} cy={region.cy} r="3" fill={fillColor} opacity="0.6">
-                    <animate attributeName="r" values="3;8;3" dur="2s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite" />
+              <g key={d.name} onClick={() => setSelected(isSel ? null : d.name)} style={{ cursor: "pointer" }}>
+                {/* Animated pulse for high-risk */}
+                {isHot && (
+                  <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity="0.15">
+                    <animate attributeName="r" values={`${r};${r + 15};${r}`} dur="2.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.15;0.02;0.15" dur="2.5s" repeatCount="indefinite" />
                   </circle>
                 )}
-                {/* District label */}
-                {(isSel || cases > 10) && (
-                  <text x={region.cx} y={region.cy + 1} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={isSel ? 7 : 5.5} fontWeight="bold" fontFamily="monospace" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
-                    {region.name.length > 10 ? region.name.slice(0, 8) + ".." : region.name}
-                  </text>
-                )}
-                {cases > 0 && isSel && (
-                  <text x={region.cx} y={region.cy + 10} textAnchor="middle" fill="white" fontSize="7" fontFamily="monospace" fontWeight="bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
-                    {cases}
-                  </text>
+                {/* Glow */}
+                <circle cx={pos.x} cy={pos.y} r={r + 4} fill={d.color} opacity={isSel ? 0.25 : 0.08} className="transition-all duration-300" />
+                {/* Main circle */}
+                <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity={isSel ? 0.95 : 0.7} stroke={isSel ? "white" : d.color} strokeWidth={isSel ? 2.5 : 1} strokeOpacity={isSel ? 1 : 0.3} className="transition-all duration-300" />
+                {/* Case count */}
+                <text x={pos.x} y={pos.y + 4} textAnchor="middle" fill="white" fontSize={r > 15 ? 11 : 9} fontWeight="bold" fontFamily="monospace" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.7)" }}>{d.cases}</text>
+                {/* Label — show for selected or high-case districts */}
+                {(isSel || d.cases > 10) && (
+                  <g>
+                    {/* Label line */}
+                    <line x1={pos.x} y1={pos.y - r - 2} x2={pos.x + (pos.x > 200 ? 15 : -15)} y2={pos.y - r - 14} stroke={isSel ? "white" : d.color} strokeWidth="1" opacity="0.6" />
+                    <text x={pos.x + (pos.x > 200 ? 18 : -18)} y={pos.y - r - 12} textAnchor={pos.x > 200 ? "start" : "end"} fill={isSel ? "white" : "var(--color-foreground, #e2e8f0)"} fontSize={isSel ? 11 : 9} fontWeight="bold" fontFamily="monospace">
+                      {d.name}
+                    </text>
+                  </g>
                 )}
               </g>
             );
           })}
         </svg>
-        {/* Legend */}
-        <div className="flex justify-center gap-4 mt-1">
-          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-red-500" /><span className="text-[9px] text-muted-foreground">Critical (&gt;30)</span></div>
-          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-orange-500" /><span className="text-[9px] text-muted-foreground">High (15-30)</span></div>
-          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-yellow-500" /><span className="text-[9px] text-muted-foreground">Medium (8-15)</span></div>
-          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-green-500" /><span className="text-[9px] text-muted-foreground">Low (&lt;8)</span></div>
-        </div>
       </div>
 
       {/* Stats panel */}
-      <div className="w-[160px] shrink-0 space-y-3">
-        <div className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider">District Stats</div>
+      <div className="w-[170px] shrink-0 space-y-3">
+        <div className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider">District Intelligence</div>
+
         {selectedD ? (
-          <div className="animate-slide-up space-y-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedD.color }} />
-                <span className="font-mono text-sm font-bold">{selectedD.name}</span>
-              </div>
-              <div className="text-3xl font-bold font-mono mt-1" style={{ color: selectedD.color }}>{selectedD.cases}</div>
-              <div className="text-xs text-muted-foreground">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of state total</div>
+          <div className="animate-slide-up space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: selectedD.color }} />
+              <span className="font-mono text-sm font-bold">{selectedD.name}</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(selectedD.cases / 50) * 100}%`, backgroundColor: selectedD.color }} />
+            <div className="text-3xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
+            <div className="text-xs text-muted-foreground">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of state total</div>
+            <div className="w-full h-2.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min((selectedD.cases / 50) * 100, 100)}%`, backgroundColor: selectedD.color }} />
             </div>
-            <div className="text-[10px] text-muted-foreground">
-              Threat Level: <span className="font-bold" style={{ color: selectedD.color }}>{selectedD.cases > 30 ? "CRITICAL" : selectedD.cases > 15 ? "HIGH" : selectedD.cases > 8 ? "MEDIUM" : "LOW"}</span>
+            <div className="text-[10px]">
+              Threat: <span className="font-bold" style={{ color: selectedD.color }}>
+                {selectedD.cases > 30 ? "CRITICAL" : selectedD.cases > 15 ? "HIGH" : selectedD.cases > 8 ? "MEDIUM" : "LOW"}
+              </span>
             </div>
           </div>
         ) : (
-          <div className="text-xs text-muted-foreground">Click any district on the map</div>
+          <div className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/20 border border-border/30">Click any district on the map to view details</div>
         )}
-        <div className="border-t border-border/50 pt-2 space-y-1.5">
-          <div className="text-[9px] font-mono uppercase text-muted-foreground">Top Districts</div>
-          {sorted.slice(0, 8).map((d) => (
-            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1.5 rounded transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/50"}`}>
-              <div className="flex items-center gap-1.5">
+
+        <div className="space-y-1.5">
+          <div className="text-[9px] font-mono uppercase text-muted-foreground">Rankings</div>
+          {sorted.map((d, i) => (
+            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1.5 rounded-md transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/40"}`}>
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] text-muted-foreground w-3">{i + 1}</span>
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[10px] font-mono truncate max-w-[85px]">{d.name}</span>
+                <span className="text-[10px] font-mono truncate max-w-[80px]">{d.name}</span>
               </div>
               <span className="text-[10px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
             </button>
           ))}
         </div>
-        <div className="text-[10px] text-muted-foreground font-mono pt-2 border-t border-border/50">
-          State Total: <span className="font-bold text-foreground">{totalCases}</span>
+
+        <div className="pt-2 border-t border-border/50 space-y-1">
+          <div className="flex justify-between text-[10px]">
+            <span className="text-muted-foreground">State Total</span>
+            <span className="font-mono font-bold">{totalCases}</span>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /><span className="text-[8px] text-muted-foreground">&gt;30</span></span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500" /><span className="text-[8px] text-muted-foreground">15-30</span></span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500" /><span className="text-[8px] text-muted-foreground">8-15</span></span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-[8px] text-muted-foreground">&lt;8</span></span>
+          </div>
         </div>
       </div>
     </div>
