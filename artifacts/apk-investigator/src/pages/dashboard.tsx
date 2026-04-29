@@ -59,74 +59,137 @@ const DISTRICT_DATA = [
   { name: "Chitradurga", cases: 6, color: "#22c55e", x: 150, y: 160 },
 ];
 
+// Karnataka district regions with simplified boundary paths
+const KA_DISTRICTS = [
+  { id: "bidar", name: "Bidar", path: "M218,18 L240,15 L252,28 L248,42 L230,45 L218,35Z", cx: 235, cy: 30 },
+  { id: "kalaburagi", name: "Kalaburagi", path: "M218,35 L230,45 L248,42 L260,55 L255,72 L235,75 L215,68 L205,52Z", cx: 233, cy: 58 },
+  { id: "raichur", name: "Raichur", path: "M205,52 L215,68 L235,75 L230,92 L210,98 L192,90 L188,72Z", cx: 212, cy: 78 },
+  { id: "ballari", name: "Ballari", path: "M170,78 L188,72 L192,90 L210,98 L205,115 L185,120 L168,110 L162,92Z", cx: 186, cy: 98 },
+  { id: "belagavi", name: "Belagavi", path: "M55,65 L78,55 L98,62 L105,80 L95,98 L72,102 L55,92 L48,78Z", cx: 78, cy: 80 },
+  { id: "dharwad", name: "Hubli-Dharwad", path: "M98,62 L118,58 L132,68 L135,88 L120,98 L105,95 L95,98 L105,80Z", cx: 115, cy: 80 },
+  { id: "gadag", name: "Gadag", path: "M132,68 L152,62 L165,72 L162,92 L145,98 L135,88Z", cx: 148, cy: 80 },
+  { id: "haveri", name: "Haveri", path: "M105,95 L120,98 L135,88 L145,98 L140,115 L122,120 L108,112Z", cx: 125, cy: 105 },
+  { id: "uttarakannada", name: "Uttara Kannada", path: "M48,78 L55,92 L72,102 L95,98 L105,95 L108,112 L98,132 L78,145 L55,148 L38,135 L32,112 L38,92Z", cx: 70, cy: 118 },
+  { id: "davangere", name: "Davangere", path: "M140,115 L162,110 L175,120 L172,138 L155,145 L140,138Z", cx: 157, cy: 128 },
+  { id: "shivamogga", name: "Shivamogga", path: "M98,132 L108,112 L122,120 L140,115 L140,138 L128,152 L108,155 L92,148Z", cx: 118, cy: 135 },
+  { id: "chitradurga", name: "Chitradurga", path: "M155,145 L172,138 L185,145 L188,162 L175,172 L158,168 L150,158Z", cx: 170, cy: 155 },
+  { id: "tumakuru", name: "Tumakuru", path: "M150,158 L158,168 L175,172 L180,190 L168,202 L148,198 L138,185 L140,170Z", cx: 160, cy: 182 },
+  { id: "bengaluru", name: "Bengaluru Urban", path: "M180,190 L198,185 L210,195 L208,212 L195,218 L182,215 L175,205Z", cx: 195, cy: 202 },
+  { id: "bengalururural", name: "Bengaluru Rural", path: "M168,202 L180,190 L175,205 L182,215 L175,228 L160,225 L152,215Z", cx: 170, cy: 212 },
+  { id: "hassan", name: "Hassan", path: "M108,155 L128,152 L140,170 L138,185 L125,195 L108,190 L98,175Z", cx: 120, cy: 175 },
+  { id: "udupi", name: "Udupi", path: "M55,148 L78,145 L92,148 L88,168 L72,178 L55,175 L45,162Z", cx: 68, cy: 162 },
+  { id: "dakshinakannada", name: "Mangaluru", path: "M45,162 L55,175 L72,178 L78,195 L68,212 L50,215 L38,202 L35,182Z", cx: 58, cy: 192 },
+  { id: "kodagu", name: "Kodagu", path: "M78,195 L98,190 L108,205 L102,222 L85,225 L72,218 L68,212Z", cx: 90, cy: 210 },
+  { id: "mysuru", name: "Mysuru", path: "M102,222 L108,205 L125,195 L138,205 L148,220 L142,238 L125,245 L110,240Z", cx: 125, cy: 225 },
+  { id: "mandya", name: "Mandya", path: "M138,205 L148,198 L160,205 L165,220 L155,232 L142,238 L138,225Z", cx: 150, cy: 218 },
+  { id: "chamarajanagar", name: "Chamarajanagar", path: "M125,245 L142,238 L155,248 L150,265 L135,270 L120,262Z", cx: 138, cy: 255 },
+  { id: "ramanagara", name: "Ramanagara", path: "M160,205 L168,202 L175,215 L175,228 L165,235 L155,232 L155,218Z", cx: 165, cy: 218 },
+  { id: "kolar", name: "Kolar", path: "M210,195 L228,192 L238,205 L232,218 L218,222 L208,212Z", cx: 222, cy: 208 },
+  { id: "chikkaballapur", name: "Chikkaballapur", path: "M198,175 L215,170 L228,180 L228,192 L210,195 L198,185Z", cx: 213, cy: 183 },
+  { id: "koppal", name: "Koppal", path: "M152,62 L170,58 L170,78 L162,92 L145,98Z", cx: 160, cy: 78 },
+  { id: "yadgir", name: "Yadgir", path: "M215,68 L235,75 L230,92 L210,98 L205,85Z", cx: 220, cy: 82 },
+  { id: "vijayapura", name: "Vijayapura", path: "M105,40 L132,35 L152,42 L152,62 L132,68 L118,58 L98,62 L95,50Z", cx: 125, cy: 52 },
+  { id: "bagalkot", name: "Bagalkot", path: "M132,35 L155,30 L170,38 L170,58 L152,62 L152,42Z", cx: 152, cy: 46 },
+  { id: "chikkamagaluru", name: "Chikkamagaluru", path: "M88,168 L98,175 L108,190 L98,205 L78,195 L72,178Z", cx: 90, cy: 185 },
+];
+
 function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
   const [selected, setSelected] = React.useState<string | null>(null);
   const totalCases = districts.reduce((s, d) => s + d.cases, 0);
   const sorted = [...districts].sort((a, b) => b.cases - a.cases);
   const selectedD = districts.find(x => x.name === selected);
 
-  return (
-    <div className="flex gap-4">
-      {/* Map */}
-      <div className="flex-1 relative">
-        <svg viewBox="0 0 300 330" className="w-full h-[280px]">
-          <path d="M75,25 L95,18 L120,15 L145,20 L170,15 L195,18 L220,30 L240,45 L255,65 L265,85 L270,105 L268,125 L260,140 L250,155 L245,170 L248,185 L255,200 L250,215 L240,225 L230,240 L225,255 L215,270 L200,280 L185,290 L170,298 L155,305 L140,310 L125,312 L110,308 L95,300 L80,288 L68,275 L58,260 L50,245 L42,228 L35,210 L30,190 L28,170 L30,150 L35,130 L40,112 L48,95 L55,78 L60,62 L65,48 L70,35 Z"
-            fill="var(--color-muted, #1e293b)" stroke="var(--color-primary, #0095ff)" strokeWidth="1" opacity="0.3" />
-          <path d="M150,80 L150,180 M80,150 L220,150 M110,100 L190,200 M190,100 L110,200" stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.15" strokeDasharray="4 4" />
+  // Map district data to regions
+  const getDistrictData = (regionName: string) => districts.find(d =>
+    regionName.toLowerCase().includes(d.name.toLowerCase().split(" ")[0]) ||
+    d.name.toLowerCase().includes(regionName.toLowerCase().split(" ")[0])
+  );
 
-          {districts.map((d) => {
-            const r = Math.max(5, Math.min(d.cases / 2.5, 18));
-            const isHot = d.cases > 20;
-            const isSel = selected === d.name;
+  return (
+    <div className="flex gap-6">
+      {/* SVG Map */}
+      <div className="flex-1">
+        <svg viewBox="0 0 280 285" className="w-full h-[350px]">
+          {KA_DISTRICTS.map((region) => {
+            const data = getDistrictData(region.name);
+            const cases = data?.cases || 0;
+            const isSel = selected === data?.name;
+            // Color by threat level
+            const fillColor = cases > 30 ? "#ef4444" : cases > 15 ? "#f97316" : cases > 8 ? "#eab308" : cases > 0 ? "#22c55e" : "var(--color-muted, #334155)";
+            const fillOpacity = isSel ? 0.9 : cases > 0 ? 0.6 : 0.2;
+
             return (
-              <g key={d.name} onClick={() => setSelected(isSel ? null : d.name)} style={{ cursor: "pointer" }}>
-                {isHot && <circle cx={d.x} cy={d.y} r={r + 8} fill={d.color} opacity="0.08">
-                  <animate attributeName="r" values={`${r + 4};${r + 14};${r + 4}`} dur="2.5s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" values="0.12;0.03;0.12" dur="2.5s" repeatCount="indefinite" />
-                </circle>}
-                <circle cx={d.x} cy={d.y} r={r + 3} fill={d.color} opacity={isSel ? 0.35 : 0.1} />
-                <circle cx={d.x} cy={d.y} r={r} fill={d.color} opacity={isSel ? 1 : 0.8} stroke={isSel ? "white" : "none"} strokeWidth={isSel ? 2 : 0} />
-                {r >= 7 && <text x={d.x} y={d.y + 3} textAnchor="middle" fill="white" fontSize={r > 10 ? 8 : 6} fontWeight="bold" fontFamily="monospace">{d.cases}</text>}
-                {(isSel || d.cases > 15) && (
-                  <text x={d.x + (d.x > 150 ? r + 4 : -(r + 4))} y={d.y + 3} textAnchor={d.x > 150 ? "start" : "end"} fill={isSel ? d.color : "var(--color-muted-foreground, #94a3b8)"} fontSize={isSel ? 9 : 7} fontWeight={isSel ? "bold" : "normal"} fontFamily="monospace">
-                    {d.name.length > 14 ? d.name.slice(0, 12) + ".." : d.name}
+              <g key={region.id} onClick={() => data && setSelected(isSel ? null : data.name)} style={{ cursor: data ? "pointer" : "default" }}>
+                <path d={region.path} fill={fillColor} fillOpacity={fillOpacity} stroke={isSel ? "white" : "var(--color-border, #475569)"} strokeWidth={isSel ? 2 : 0.8} className="transition-all duration-300 hover:opacity-80" />
+                {/* Pulse for high-risk */}
+                {cases > 20 && (
+                  <circle cx={region.cx} cy={region.cy} r="3" fill={fillColor} opacity="0.6">
+                    <animate attributeName="r" values="3;8;3" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                )}
+                {/* District label */}
+                {(isSel || cases > 10) && (
+                  <text x={region.cx} y={region.cy + 1} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={isSel ? 7 : 5.5} fontWeight="bold" fontFamily="monospace" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                    {region.name.length > 10 ? region.name.slice(0, 8) + ".." : region.name}
+                  </text>
+                )}
+                {cases > 0 && isSel && (
+                  <text x={region.cx} y={region.cy + 10} textAnchor="middle" fill="white" fontSize="7" fontFamily="monospace" fontWeight="bold" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}>
+                    {cases}
                   </text>
                 )}
               </g>
             );
           })}
         </svg>
+        {/* Legend */}
+        <div className="flex justify-center gap-4 mt-1">
+          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-red-500" /><span className="text-[9px] text-muted-foreground">Critical (&gt;30)</span></div>
+          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-orange-500" /><span className="text-[9px] text-muted-foreground">High (15-30)</span></div>
+          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-yellow-500" /><span className="text-[9px] text-muted-foreground">Medium (8-15)</span></div>
+          <div className="flex items-center gap-1"><div className="w-3 h-2 rounded-sm bg-green-500" /><span className="text-[9px] text-muted-foreground">Low (&lt;8)</span></div>
+        </div>
       </div>
 
-      {/* Stats sidebar */}
-      <div className="w-[140px] shrink-0 space-y-2">
+      {/* Stats panel */}
+      <div className="w-[160px] shrink-0 space-y-3">
+        <div className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider">District Stats</div>
         {selectedD ? (
-          <div className="animate-slide-up">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedD.color }} />
-              <span className="font-mono text-xs font-bold">{selectedD.name}</span>
+          <div className="animate-slide-up space-y-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedD.color }} />
+                <span className="font-mono text-sm font-bold">{selectedD.name}</span>
+              </div>
+              <div className="text-3xl font-bold font-mono mt-1" style={{ color: selectedD.color }}>{selectedD.cases}</div>
+              <div className="text-xs text-muted-foreground">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of state total</div>
             </div>
-            <div className="text-2xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
-            <div className="text-[10px] text-muted-foreground mb-3">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of total</div>
-            <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(selectedD.cases / 50) * 100}%`, backgroundColor: selectedD.color }} />
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(selectedD.cases / 50) * 100}%`, backgroundColor: selectedD.color }} />
+            </div>
+            <div className="text-[10px] text-muted-foreground">
+              Threat Level: <span className="font-bold" style={{ color: selectedD.color }}>{selectedD.cases > 30 ? "CRITICAL" : selectedD.cases > 15 ? "HIGH" : selectedD.cases > 8 ? "MEDIUM" : "LOW"}</span>
             </div>
           </div>
         ) : (
-          <div className="text-[10px] text-muted-foreground mb-2">Click a district</div>
+          <div className="text-xs text-muted-foreground">Click any district on the map</div>
         )}
-        <div className="border-t border-border/50 pt-2 space-y-1">
+        <div className="border-t border-border/50 pt-2 space-y-1.5">
+          <div className="text-[9px] font-mono uppercase text-muted-foreground">Top Districts</div>
           {sorted.slice(0, 8).map((d) => (
-            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1 rounded transition-colors ${selected === d.name ? "bg-muted" : "hover:bg-muted/50"}`}>
+            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1.5 rounded transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/50"}`}>
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[9px] font-mono truncate max-w-[80px]">{d.name}</span>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[10px] font-mono truncate max-w-[85px]">{d.name}</span>
               </div>
-              <span className="text-[9px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
+              <span className="text-[10px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
             </button>
           ))}
         </div>
-        <div className="text-[9px] text-muted-foreground font-mono pt-1 border-t border-border/50">Total: {totalCases}</div>
+        <div className="text-[10px] text-muted-foreground font-mono pt-2 border-t border-border/50">
+          State Total: <span className="font-bold text-foreground">{totalCases}</span>
+        </div>
       </div>
     </div>
   );
@@ -312,18 +375,19 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Karnataka Vulnerability Map */}
-        <Card className="cyber-card animate-slide-up">
-          <CardHeader>
-            <CardTitle className="text-sm font-mono uppercase flex items-center gap-2">
-              <MapPin className="h-4 w-4" /> Karnataka Vulnerability Map
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <KarnatakaMap districts={DISTRICT_DATA} />
-          </CardContent>
-        </Card>
+        {/* Karnataka Vulnerability Map — moved to own row for full width */}
       </div>
+
+      <Card className="cyber-card animate-slide-up">
+        <CardHeader>
+          <CardTitle className="text-sm font-mono uppercase flex items-center gap-2">
+            <MapPin className="h-4 w-4" /> Karnataka Vulnerability Map
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <KarnatakaMap districts={DISTRICT_DATA} />
+        </CardContent>
+      </Card>
 
       {/* IOCs and Behaviors — with bar charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -353,7 +417,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topBehaviors.slice(0, 5).map((b: any) => ({ name: b.title.length > 22 ? b.title.slice(0, 20) + ".." : b.title, count: b.count }))} layout="vertical" margin={{ left: 10, right: 20 }}>
+                <BarChart data={topBehaviors.slice(0, 5).map((b: any) => ({ name: b.title.length > 22 ? b.title.slice(0, 20) + ".." : b.title, count: b.count, type: b.type }))} layout="vertical" margin={{ left: 10, right: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #334155)" horizontal={false} />
                   <XAxis type="number" tick={{ fontSize: 10, fill: "var(--color-muted-foreground, #94a3b8)" }} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "var(--color-muted-foreground, #94a3b8)" }} width={140} />
@@ -361,6 +425,11 @@ export default function Dashboard() {
                   <Bar dataKey="count" fill="#ef4444" radius={[0, 4, 4, 0]} animationDuration={1500} />
                 </BarChart>
               </ResponsiveContainer>
+            </div>
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {topBehaviors.slice(0, 5).map((beh: any, i: number) => (
+                <span key={i} className="text-[9px] font-mono px-2 py-0.5 rounded bg-muted border border-border/50">{beh.type}: {beh.count}</span>
+              ))}
             </div>
           </CardContent>
         </Card>
