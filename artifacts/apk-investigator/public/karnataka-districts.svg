@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650">
+  <!-- Karnataka District Map - traced from reference -->
+  <!-- Northern districts -->
+  <path id="bidar" d="M320,20 L355,15 L380,30 L375,55 L350,60 L325,50Z" fill="#f0e68c" stroke="#666" stroke-width="1"/>
+  <path id="kalaburagi" d="M325,50 L350,60 L375,55 L395,70 L390,100 L365,110 L335,105 L310,90Z" fill="#ffd700" stroke="#666" stroke-width="1"/>
+  <path id="yadgir" d="M310,90 L335,105 L340,130 L315,140 L290,125Z" fill="#daa520" stroke="#666" stroke-width="1"/>
+  <path id="raichur" d="M290,125 L315,140 L340,130 L355,150 L340,175 L310,180 L285,165Z" fill="#f4a460" stroke="#666" stroke-width="1"/>
+  <path id="vijayapura" d="M140,60 L180,50 L215,55 L230,75 L220,100 L185,105 L155,95 L135,80Z" fill="#4169e1" stroke="#666" stroke-width="1"/>
+  <path id="bagalkot" d="M185,105 L220,100 L245,110 L250,135 L225,145 L200,135Z" fill="#87ceeb" stroke="#666" stroke-width="1"/>
+  <path id="belagavi" d="M60,85 L95,70 L135,80 L155,95 L145,120 L115,130 L80,125 L55,110Z" fill="#1e90ff" stroke="#666" stroke-width="1"/>
+  <path id="dharwad" d="M115,130 L145,120 L175,125 L185,150 L165,165 L135,160 L115,150Z" fill="#00bfff" stroke="#666" stroke-width="1"/>
+  <path id="gadag" d="M175,125 L200,120 L225,130 L225,155 L200,165 L185,150Z" fill="#87cefa" stroke="#666" stroke-width="1"/>
+  <path id="koppal" d="M225,130 L250,135 L275,140 L280,165 L255,175 L230,165 L225,155Z" fill="#ffa500" stroke="#666" stroke-width="1"/>
+  <path id="ballari" d="M255,175 L280,165 L310,180 L305,210 L275,220 L250,205Z" fill="#ff8c00" stroke="#666" stroke-width="1"/>
+  <path id="haveri" d="M135,160 L165,165 L185,150 L200,165 L195,190 L170,200 L145,190Z" fill="#add8e6" stroke="#666" stroke-width="1"/>
+  <path id="uttarakannada" d="M30,110 L55,110 L80,125 L115,130 L115,150 L100,180 L80,210 L55,230 L30,225 L15,195 L15,150Z" fill="#4682b4" stroke="#666" stroke-width="1"/>
+  <!-- Central districts -->
+  <path id="davangere" d="M195,190 L225,185 L250,195 L250,225 L225,235 L200,225Z" fill="#deb887" stroke="#666" stroke-width="1"/>
+  <path id="shivamogga" d="M100,180 L115,150 L135,160 L145,190 L170,200 L165,230 L140,245 L110,240 L85,225Z" fill="#cd5c5c" stroke="#666" stroke-width="1"/>
+  <path id="chitradurga" d="M225,235 L250,225 L275,235 L280,265 L255,275 L230,265Z" fill="#f08080" stroke="#666" stroke-width="1"/>
+  <path id="davanagere2" d="M250,195 L275,190 L305,210 L300,240 L275,235 L250,225Z" fill="#e9967a" stroke="#666" stroke-width="1"/>
+  <!-- Southern districts -->
+  <path id="udupi" d="M55,230 L80,225 L85,260 L70,290 L45,295 L30,275Z" fill="#20b2aa" stroke="#666" stroke-width="1"/>
+  <path id="chikkamagaluru" d="M85,260 L110,240 L140,245 L150,270 L130,290 L100,295 L85,280Z" fill="#3cb371" stroke="#666" stroke-width="1"/>
+  <path id="tumakuru" d="M230,265 L255,275 L280,285 L285,315 L260,330 L235,320 L220,300Z" fill="#90ee90" stroke="#666" stroke-width="1"/>
+  <path id="hassan" d="M130,290 L150,270 L175,280 L185,310 L165,330 L140,335 L120,315Z" fill="#228b22" stroke="#666" stroke-width="1"/>
+  <path id="dakshinakannada" d="M30,275 L45,295 L70,290 L85,310 L75,340 L50,355 L25,340 L20,310Z" fill="#32cd32" stroke="#666" stroke-width="1"/>
+  <path id="kodagu" d="M85,310 L100,295 L120,315 L115,345 L95,355 L75,345 L75,340Z" fill="#006400" stroke="#666" stroke-width="1"/>
+  <path id="mysuru" d="M140,335 L165,330 L190,340 L200,370 L180,390 L155,395 L135,380 L125,360Z" fill="#ff6347" stroke="#666" stroke-width="1"/>
+  <path id="mandya" d="M185,310 L210,305 L235,320 L230,350 L205,360 L190,340Z" fill="#ffc0cb" stroke="#666" stroke-width="1"/>
+  <path id="chamarajanagar" d="M155,395 L180,390 L205,400 L200,425 L175,435 L150,420Z" fill="#98fb98" stroke="#666" stroke-width="1"/>
+  <path id="ramanagara" d="M235,320 L260,330 L265,355 L245,365 L230,350Z" fill="#dda0dd" stroke="#666" stroke-width="1"/>
+  <path id="bengalururural" d="M260,330 L285,315 L305,325 L310,350 L290,360 L265,355Z" fill="#ffb6c1" stroke="#666" stroke-width="1"/>
+  <path id="bengaluru" d="M305,325 L330,320 L350,335 L345,360 L320,370 L310,350Z" fill="#dc143c" stroke="#666" stroke-width="1"/>
+  <path id="chikkaballapur" d="M305,285 L330,280 L350,295 L345,320 L330,320 L305,325 L285,315Z" fill="#ff69b4" stroke="#666" stroke-width="1"/>
+  <path id="kolar" d="M345,320 L370,310 L385,330 L380,355 L355,360 L345,345Z" fill="#b22222" stroke="#666" stroke-width="1"/>
+  <!-- District labels -->
+  <style>text { font-family: monospace; font-size: 9px; fill: #333; font-weight: bold; pointer-events: none; }</style>
+  <text x="350" y="42" text-anchor="middle">Bidar</text>
+  <text x="355" y="85" text-anchor="middle">Kalaburagi</text>
+  <text x="310" y="115" text-anchor="middle">Yadgir</text>
+  <text x="315" y="160" text-anchor="middle">Raichur</text>
+  <text x="185" y="80" text-anchor="middle">Vijayapura</text>
+  <text x="220" y="125" text-anchor="middle">Bagalkot</text>
+  <text x="100" y="105" text-anchor="middle">Belagavi</text>
+  <text x="150" y="145" text-anchor="middle">Dharwad</text>
+  <text x="200" y="145" text-anchor="middle">Gadag</text>
+  <text x="255" y="155" text-anchor="middle">Koppal</text>
+  <text x="280" y="200" text-anchor="middle">Ballari</text>
+  <text x="165" y="180" text-anchor="middle">Haveri</text>
+  <text x="65" y="175" text-anchor="middle">Uttara Kannada</text>
+  <text x="225" y="215" text-anchor="middle">Davangere</text>
+  <text x="125" y="215" text-anchor="middle">Shivamogga</text>
+  <text x="250" y="255" text-anchor="middle">Chitradurga</text>
+  <text x="60" y="265" text-anchor="middle">Udupi</text>
+  <text x="120" y="275" text-anchor="middle">Chikmagalur</text>
+  <text x="255" y="300" text-anchor="middle">Tumakuru</text>
+  <text x="155" y="315" text-anchor="middle">Hassan</text>
+  <text x="50" y="320" text-anchor="middle">D.Kannada</text>
+  <text x="95" y="335" text-anchor="middle">Kodagu</text>
+  <text x="170" y="370" text-anchor="middle">Mysuru</text>
+  <text x="215" y="340" text-anchor="middle">Mandya</text>
+  <text x="175" y="415" text-anchor="middle">C.Nagar</text>
+  <text x="250" y="345" text-anchor="middle">Ramanagara</text>
+  <text x="285" y="345" text-anchor="middle">B.Rural</text>
+  <text x="330" y="345" text-anchor="middle">Bengaluru</text>
+  <text x="325" y="300" text-anchor="middle">C.Ballapur</text>
+  <text x="370" y="340" text-anchor="middle">Kolar</text>
+</svg>
