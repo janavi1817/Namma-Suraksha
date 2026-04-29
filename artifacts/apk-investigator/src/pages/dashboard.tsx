@@ -68,106 +68,72 @@ function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
   const sorted = [...districts].sort((a, b) => b.cases - a.cases);
   const selectedD = districts.find(x => x.name === selected);
 
-  // Positions mapped to the SVG district map (percentage-based)
+  // Positions mapped to the district outline SVG
   const hotspots: { name: string; top: number; left: number }[] = [
-    { name: "Belagavi", top: 15, left: 18 },
-    { name: "Hubli-Dharwad", top: 22, left: 28 },
-    { name: "Kalaburagi", top: 12, left: 68 },
-    { name: "Raichur", top: 23, left: 60 },
-    { name: "Ballari", top: 30, left: 54 },
-    { name: "Davangere", top: 33, left: 42 },
-    { name: "Shivamogga", top: 36, left: 24 },
-    { name: "Chitradurga", top: 39, left: 50 },
-    { name: "Udupi", top: 42, left: 10 },
-    { name: "Tumakuru", top: 46, left: 50 },
-    { name: "Hassan", top: 50, left: 30 },
-    { name: "Mangaluru", top: 52, left: 10 },
-    { name: "Bengaluru Rural", top: 52, left: 56 },
-    { name: "Bengaluru Urban", top: 53, left: 65 },
-    { name: "Mysuru", top: 60, left: 35 },
+    { name: "Belagavi", top: 16, left: 28 },
+    { name: "Hubli-Dharwad", top: 20, left: 37 },
+    { name: "Kalaburagi", top: 11, left: 60 },
+    { name: "Raichur", top: 20, left: 62 },
+    { name: "Ballari", top: 26, left: 57 },
+    { name: "Davangere", top: 31, left: 41 },
+    { name: "Shivamogga", top: 30, left: 29 },
+    { name: "Chitradurga", top: 33, left: 51 },
+    { name: "Udupi", top: 38, left: 13 },
+    { name: "Tumakuru", top: 41, left: 50 },
+    { name: "Hassan", top: 45, left: 31 },
+    { name: "Mangaluru", top: 48, left: 13 },
+    { name: "Bengaluru Rural", top: 45, left: 58 },
+    { name: "Bengaluru Urban", top: 47, left: 63 },
+    { name: "Mysuru", top: 55, left: 37 },
   ];
 
   return (
     <div className="flex gap-4">
-      {/* Map */}
-      <div className="flex-1 relative" style={{ minHeight: 400 }}>
-        {/* Local SVG map as background */}
-        <img
-          src="/karnataka-districts.svg"
-          alt="Karnataka Districts"
-          className="absolute inset-0 w-full h-full object-contain"
-          style={{ opacity: 0.35 }}
-        />
-        {/* Interactive overlay */}
-        <div className="relative w-full" style={{ minHeight: 400 }}>
+      <div className="flex-1 relative" style={{ minHeight: 420 }}>
+        {/* District outline map background */}
+        <img src="/karnataka-districts.svg" alt="Karnataka Districts Map" className="absolute inset-0 w-full h-full object-contain" style={{ opacity: 0.7 }} />
+        {/* Hotspot overlay */}
+        <div className="relative w-full" style={{ minHeight: 420 }}>
           {hotspots.map((hs) => {
             const d = districts.find(x => x.name === hs.name);
             if (!d) return null;
-            const size = Math.max(24, Math.min(d.cases * 1.1, 60));
+            const size = Math.max(22, Math.min(d.cases * 1, 52));
             const isSel = selected === d.name;
             const isHot = d.cases > 20;
             return (
-              <div key={d.name} onClick={() => setSelected(isSel ? null : d.name)}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10"
-                style={{ top: `${hs.top}%`, left: `${hs.left}%` }}>
-                {isHot && <div className="absolute rounded-full animate-ping" style={{ width: size + 20, height: size + 20, top: -(10), left: -(10), backgroundColor: d.color, opacity: 0.12 }} />}
-                <div className="absolute rounded-full transition-all duration-300" style={{ width: size + 14, height: size + 14, top: -7, left: -7, backgroundColor: d.color, opacity: isSel ? 0.3 : 0.1 }} />
-                <div className="rounded-full flex items-center justify-center font-mono font-bold text-white transition-all duration-300"
-                  style={{ width: size, height: size, backgroundColor: d.color, opacity: isSel ? 1 : 0.85, fontSize: size > 32 ? 13 : 10,
-                    boxShadow: isSel ? `0 0 25px ${d.color}80` : `0 2px 8px ${d.color}40`,
-                    border: isSel ? '3px solid white' : '2px solid rgba(255,255,255,0.3)' }}>
+              <div key={d.name} onClick={() => setSelected(isSel ? null : d.name)} className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10" style={{ top: `${hs.top}%`, left: `${hs.left}%` }}>
+                {isHot && <div className="absolute rounded-full animate-ping" style={{ width: size + 18, height: size + 18, top: -9, left: -9, backgroundColor: d.color, opacity: 0.1 }} />}
+                <div className="absolute rounded-full transition-all" style={{ width: size + 10, height: size + 10, top: -5, left: -5, backgroundColor: d.color, opacity: isSel ? 0.25 : 0.08 }} />
+                <div className="rounded-full flex items-center justify-center font-mono font-bold text-white transition-all" style={{ width: size, height: size, backgroundColor: d.color, opacity: isSel ? 1 : 0.85, fontSize: size > 30 ? 12 : 9, boxShadow: isSel ? `0 0 20px ${d.color}80` : `0 2px 6px ${d.color}40`, border: isSel ? '2px solid white' : '1px solid rgba(255,255,255,0.3)' }}>
                   {d.cases}
                 </div>
-                {(isSel || d.cases > 10) && (
-                  <div className="absolute whitespace-nowrap font-mono font-bold text-center" style={{ bottom: size + 4, left: '50%', transform: 'translateX(-50%)',
-                    fontSize: isSel ? 11 : 9, color: isSel ? d.color : 'var(--color-muted-foreground)', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
-                    {d.name}
-                  </div>
-                )}
+                {(isSel || d.cases > 12) && <div className="absolute whitespace-nowrap font-mono font-bold" style={{ bottom: size + 2, left: '50%', transform: 'translateX(-50%)', fontSize: isSel ? 10 : 8, color: isSel ? d.color : 'var(--color-muted-foreground)' }}>{d.name}</div>}
               </div>
             );
           })}
         </div>
       </div>
-
       {/* Stats */}
-      <div className="w-[170px] shrink-0 space-y-3">
+      <div className="w-[165px] shrink-0 space-y-3">
         <div className="text-[10px] font-mono uppercase text-muted-foreground tracking-wider">District Intelligence</div>
         {selectedD ? (
-          <div className="animate-slide-up space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full animate-pulse" style={{ backgroundColor: selectedD.color }} />
-              <span className="font-mono text-sm font-bold">{selectedD.name}</span>
-            </div>
-            <div className="text-3xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
-            <div className="text-xs text-muted-foreground">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of state total</div>
-            <div className="w-full h-2.5 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min((selectedD.cases / 50) * 100, 100)}%`, backgroundColor: selectedD.color }} />
-            </div>
-            <div className="text-[10px]">Threat: <span className="font-bold" style={{ color: selectedD.color }}>
-              {selectedD.cases > 30 ? "🔴 CRITICAL" : selectedD.cases > 15 ? "🟠 HIGH" : selectedD.cases > 8 ? "🟡 MEDIUM" : "🟢 LOW"}
-            </span></div>
+          <div className="animate-slide-up space-y-2 p-3 rounded-lg bg-muted/30 border border-border/50">
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: selectedD.color }} /><span className="font-mono text-xs font-bold">{selectedD.name}</span></div>
+            <div className="text-2xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
+            <div className="text-[10px] text-muted-foreground">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of total</div>
+            <div className="w-full h-2 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min((selectedD.cases / 50) * 100, 100)}%`, backgroundColor: selectedD.color }} /></div>
+            <div className="text-[9px]">Threat: <span className="font-bold" style={{ color: selectedD.color }}>{selectedD.cases > 30 ? "🔴 CRITICAL" : selectedD.cases > 15 ? "🟠 HIGH" : selectedD.cases > 8 ? "🟡 MEDIUM" : "🟢 LOW"}</span></div>
           </div>
-        ) : (
-          <div className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/20 border border-dashed border-border/30">Click any district</div>
-        )}
-        <div className="space-y-1.5">
-          <div className="text-[9px] font-mono uppercase text-muted-foreground">All Districts</div>
+        ) : <div className="text-xs text-muted-foreground p-2 rounded bg-muted/20 border border-dashed border-border/30">Click a district</div>}
+        <div className="space-y-1">
           {sorted.map((d, i) => (
-            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1.5 rounded-md transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/40"}`}>
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] text-muted-foreground w-4 text-right">{i + 1}.</span>
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[10px] font-mono truncate max-w-[75px]">{d.name}</span>
-              </div>
-              <span className="text-[10px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
+            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full p-1 rounded text-left transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/40"}`}>
+              <div className="flex items-center gap-1.5"><span className="text-[8px] text-muted-foreground w-3 text-right">{i+1}</span><div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }} /><span className="text-[9px] font-mono truncate max-w-[72px]">{d.name}</span></div>
+              <span className="text-[9px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
             </button>
           ))}
         </div>
-        <div className="pt-2 border-t border-border/50 flex justify-between text-[10px]">
-          <span className="text-muted-foreground">State Total</span>
-          <span className="font-mono font-bold">{totalCases}</span>
-        </div>
+        <div className="pt-1 border-t border-border/50 flex justify-between text-[9px]"><span className="text-muted-foreground">Total</span><span className="font-mono font-bold">{totalCases}</span></div>
       </div>
     </div>
   );
