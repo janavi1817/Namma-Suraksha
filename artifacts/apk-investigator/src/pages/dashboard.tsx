@@ -42,10 +42,93 @@ const THREAT_RADAR = [
 ];
 
 const DISTRICT_DATA = [
-  { name: "Bengaluru", cases: 47, color: "#ef4444" }, { name: "Mysuru", cases: 23, color: "#f97316" },
-  { name: "Mangaluru", cases: 18, color: "#eab308" }, { name: "Hubli", cases: 8, color: "#22c55e" },
-  { name: "Belagavi", cases: 12, color: "#f97316" }, { name: "Kalaburagi", cases: 6, color: "#22c55e" },
+  { name: "Bengaluru Urban", cases: 47, color: "#ef4444", x: 165, y: 215 },
+  { name: "Bengaluru Rural", cases: 14, color: "#f97316", x: 145, y: 200 },
+  { name: "Mysuru", cases: 23, color: "#f97316", x: 130, y: 255 },
+  { name: "Mangaluru", cases: 18, color: "#eab308", x: 65, y: 270 },
+  { name: "Hubli-Dharwad", cases: 15, color: "#f97316", x: 105, y: 145 },
+  { name: "Belagavi", cases: 12, color: "#eab308", x: 65, y: 110 },
+  { name: "Kalaburagi", cases: 6, color: "#22c55e", x: 230, y: 95 },
+  { name: "Ballari", cases: 9, color: "#22c55e", x: 175, y: 130 },
+  { name: "Davangere", cases: 11, color: "#eab308", x: 140, y: 165 },
+  { name: "Shivamogga", cases: 8, color: "#22c55e", x: 110, y: 190 },
+  { name: "Tumakuru", cases: 10, color: "#eab308", x: 150, y: 195 },
+  { name: "Raichur", cases: 5, color: "#22c55e", x: 205, y: 120 },
+  { name: "Hassan", cases: 7, color: "#22c55e", x: 110, y: 225 },
+  { name: "Udupi", cases: 4, color: "#22c55e", x: 70, y: 230 },
+  { name: "Chitradurga", cases: 6, color: "#22c55e", x: 150, y: 160 },
 ];
+
+function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
+  const [hovered, setHovered] = React.useState<string | null>(null);
+  const totalCases = districts.reduce((s, d) => s + d.cases, 0);
+
+  return (
+    <div className="relative">
+      <svg viewBox="0 0 300 330" className="w-full h-[300px]">
+        {/* Karnataka state outline — accurate shape */}
+        <path d="M75,25 L95,18 L120,15 L145,20 L170,15 L195,18 L220,30 L240,45 L255,65 L265,85 L270,105 L268,125 L260,140 L250,155 L245,170 L248,185 L255,200 L250,215 L240,225 L230,240 L225,255 L215,270 L200,280 L185,290 L170,298 L155,305 L140,310 L125,312 L110,308 L95,300 L80,288 L68,275 L58,260 L50,245 L42,228 L35,210 L30,190 L28,170 L30,150 L35,130 L40,112 L48,95 L55,78 L60,62 L65,48 L70,35 Z"
+          fill="var(--color-muted, #1e293b)" stroke="var(--color-border, #334155)" strokeWidth="1.5" opacity="0.4" />
+
+        {/* Internal region boundaries (simplified) */}
+        <path d="M150,80 L150,180 M80,150 L220,150 M110,100 L190,200 M190,100 L110,200" stroke="var(--color-border, #334155)" strokeWidth="0.5" opacity="0.2" strokeDasharray="4 4" />
+
+        {/* District markers with pulse animation */}
+        {districts.map((d, i) => {
+          const r = Math.max(6, Math.min(d.cases / 2.5, 20));
+          const isHot = d.cases > 20;
+          const isHovered = hovered === d.name;
+          return (
+            <g key={d.name} onMouseEnter={() => setHovered(d.name)} onMouseLeave={() => setHovered(null)} style={{ cursor: "pointer" }}>
+              {/* Outer pulse ring */}
+              {isHot && <circle cx={d.x} cy={d.y} r={r + 8} fill={d.color} opacity="0.1">
+                <animate attributeName="r" values={`${r + 4};${r + 12};${r + 4}`} dur="2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.15;0.05;0.15" dur="2s" repeatCount="indefinite" />
+              </circle>}
+              {/* Glow ring */}
+              <circle cx={d.x} cy={d.y} r={r + 3} fill={d.color} opacity={isHovered ? 0.3 : 0.12} />
+              {/* Main dot */}
+              <circle cx={d.x} cy={d.y} r={r} fill={d.color} opacity={isHovered ? 1 : 0.85} stroke={isHovered ? "white" : "none"} strokeWidth={isHovered ? 2 : 0} />
+              {/* Case count inside dot */}
+              {r >= 8 && <text x={d.x} y={d.y + 3} textAnchor="middle" fill="white" fontSize={r > 12 ? 9 : 7} fontWeight="bold" fontFamily="monospace">{d.cases}</text>}
+              {/* District name label */}
+              <text x={d.x} y={d.y - r - 5} textAnchor="middle" fill={isHovered ? d.color : "var(--color-muted-foreground, #94a3b8)"} fontSize={isHovered ? 9 : 7.5} fontWeight={isHovered ? "bold" : "normal"} fontFamily="monospace">
+                {d.name.length > 12 ? d.name.slice(0, 10) + ".." : d.name}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* Hover tooltip */}
+      {hovered && (() => {
+        const d = districts.find(x => x.name === hovered);
+        if (!d) return null;
+        return (
+          <div className="absolute top-2 right-2 p-3 rounded-lg bg-card border border-border shadow-lg animate-slide-up min-w-[140px]">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
+              <span className="font-mono text-xs font-bold">{d.name}</span>
+            </div>
+            <div className="text-lg font-bold font-mono" style={{ color: d.color }}>{d.cases} cases</div>
+            <div className="text-[10px] text-muted-foreground">{((d.cases / totalCases) * 100).toFixed(1)}% of total</div>
+          </div>
+        );
+      })()}
+
+      {/* Legend + total */}
+      <div className="flex items-center justify-between mt-2 px-1">
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500" /><span className="text-[9px] text-muted-foreground">High (&gt;20)</span></div>
+          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-orange-500" /><span className="text-[9px] text-muted-foreground">Medium</span></div>
+          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-yellow-500" /><span className="text-[9px] text-muted-foreground">Watch</span></div>
+          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-green-500" /><span className="text-[9px] text-muted-foreground">Low</span></div>
+        </div>
+        <span className="text-[10px] font-mono text-muted-foreground">Total: {totalCases} cases</span>
+      </div>
+    </div>
+  );
+}
 
 function StatCard({ icon: Icon, label, value, color, delay }: { icon: any; label: string; value: number; color: string; delay: number }) {
   const animated = useAnimatedCount(value);
@@ -235,35 +318,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative">
-              {/* Simplified Karnataka map outline */}
-              <svg viewBox="0 0 300 350" className="w-full h-[220px]">
-                <path d="M150,10 L200,30 L240,60 L260,100 L270,150 L260,200 L240,240 L220,270 L200,300 L170,330 L140,340 L110,330 L80,300 L60,260 L40,220 L30,180 L35,140 L50,100 L70,60 L100,30 Z" fill="hsl(var(--muted))" stroke="hsl(var(--border))" strokeWidth="1.5" opacity="0.5" />
-                {/* District markers */}
-                {DISTRICT_DATA.map((d, i) => {
-                  const positions = [
-                    { x: 170, y: 180 }, { x: 140, y: 250 }, { x: 90, y: 290 },
-                    { x: 120, y: 120 }, { x: 70, y: 160 }, { x: 200, y: 100 },
-                  ];
-                  const pos = positions[i] || { x: 150, y: 150 };
-                  const r = Math.max(8, d.cases / 3);
-                  return (
-                    <g key={d.name}>
-                      <circle cx={pos.x} cy={pos.y} r={r + 4} fill={d.color} opacity="0.15" className="animate-pulse" />
-                      <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity="0.8" />
-                      <text x={pos.x} y={pos.y - r - 6} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="9" fontFamily="monospace" fontWeight="bold">{d.name}</text>
-                      <text x={pos.x} y={pos.y + 3} textAnchor="middle" fill="white" fontSize="8" fontWeight="bold">{d.cases}</text>
-                    </g>
-                  );
-                })}
-              </svg>
-              {/* Legend */}
-              <div className="flex justify-center gap-4 mt-2">
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-500" /><span className="text-[9px] text-muted-foreground">High</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-500" /><span className="text-[9px] text-muted-foreground">Medium</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500" /><span className="text-[9px] text-muted-foreground">Low</span></div>
-              </div>
-            </div>
+            <KarnatakaMap districts={DISTRICT_DATA} />
           </CardContent>
         </Card>
       </div>
