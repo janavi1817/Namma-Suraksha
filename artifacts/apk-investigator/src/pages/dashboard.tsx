@@ -60,71 +60,73 @@ const DISTRICT_DATA = [
 ];
 
 function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
-  const [hovered, setHovered] = React.useState<string | null>(null);
+  const [selected, setSelected] = React.useState<string | null>(null);
   const totalCases = districts.reduce((s, d) => s + d.cases, 0);
+  const sorted = [...districts].sort((a, b) => b.cases - a.cases);
+  const selectedD = districts.find(x => x.name === selected);
 
   return (
-    <div className="relative">
-      <svg viewBox="0 0 300 330" className="w-full h-[300px]">
-        {/* Karnataka state outline — accurate shape */}
-        <path d="M75,25 L95,18 L120,15 L145,20 L170,15 L195,18 L220,30 L240,45 L255,65 L265,85 L270,105 L268,125 L260,140 L250,155 L245,170 L248,185 L255,200 L250,215 L240,225 L230,240 L225,255 L215,270 L200,280 L185,290 L170,298 L155,305 L140,310 L125,312 L110,308 L95,300 L80,288 L68,275 L58,260 L50,245 L42,228 L35,210 L30,190 L28,170 L30,150 L35,130 L40,112 L48,95 L55,78 L60,62 L65,48 L70,35 Z"
-          fill="var(--color-muted, #1e293b)" stroke="var(--color-border, #334155)" strokeWidth="1.5" opacity="0.4" />
+    <div className="flex gap-4">
+      {/* Map */}
+      <div className="flex-1 relative">
+        <svg viewBox="0 0 300 330" className="w-full h-[280px]">
+          <path d="M75,25 L95,18 L120,15 L145,20 L170,15 L195,18 L220,30 L240,45 L255,65 L265,85 L270,105 L268,125 L260,140 L250,155 L245,170 L248,185 L255,200 L250,215 L240,225 L230,240 L225,255 L215,270 L200,280 L185,290 L170,298 L155,305 L140,310 L125,312 L110,308 L95,300 L80,288 L68,275 L58,260 L50,245 L42,228 L35,210 L30,190 L28,170 L30,150 L35,130 L40,112 L48,95 L55,78 L60,62 L65,48 L70,35 Z"
+            fill="var(--color-muted, #1e293b)" stroke="var(--color-primary, #0095ff)" strokeWidth="1" opacity="0.3" />
+          <path d="M150,80 L150,180 M80,150 L220,150 M110,100 L190,200 M190,100 L110,200" stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.15" strokeDasharray="4 4" />
 
-        {/* Internal region boundaries (simplified) */}
-        <path d="M150,80 L150,180 M80,150 L220,150 M110,100 L190,200 M190,100 L110,200" stroke="var(--color-border, #334155)" strokeWidth="0.5" opacity="0.2" strokeDasharray="4 4" />
+          {districts.map((d) => {
+            const r = Math.max(5, Math.min(d.cases / 2.5, 18));
+            const isHot = d.cases > 20;
+            const isSel = selected === d.name;
+            return (
+              <g key={d.name} onClick={() => setSelected(isSel ? null : d.name)} style={{ cursor: "pointer" }}>
+                {isHot && <circle cx={d.x} cy={d.y} r={r + 8} fill={d.color} opacity="0.08">
+                  <animate attributeName="r" values={`${r + 4};${r + 14};${r + 4}`} dur="2.5s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" values="0.12;0.03;0.12" dur="2.5s" repeatCount="indefinite" />
+                </circle>}
+                <circle cx={d.x} cy={d.y} r={r + 3} fill={d.color} opacity={isSel ? 0.35 : 0.1} />
+                <circle cx={d.x} cy={d.y} r={r} fill={d.color} opacity={isSel ? 1 : 0.8} stroke={isSel ? "white" : "none"} strokeWidth={isSel ? 2 : 0} />
+                {r >= 7 && <text x={d.x} y={d.y + 3} textAnchor="middle" fill="white" fontSize={r > 10 ? 8 : 6} fontWeight="bold" fontFamily="monospace">{d.cases}</text>}
+                {(isSel || d.cases > 15) && (
+                  <text x={d.x + (d.x > 150 ? r + 4 : -(r + 4))} y={d.y + 3} textAnchor={d.x > 150 ? "start" : "end"} fill={isSel ? d.color : "var(--color-muted-foreground, #94a3b8)"} fontSize={isSel ? 9 : 7} fontWeight={isSel ? "bold" : "normal"} fontFamily="monospace">
+                    {d.name.length > 14 ? d.name.slice(0, 12) + ".." : d.name}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
 
-        {/* District markers with pulse animation */}
-        {districts.map((d, i) => {
-          const r = Math.max(6, Math.min(d.cases / 2.5, 20));
-          const isHot = d.cases > 20;
-          const isHovered = hovered === d.name;
-          return (
-            <g key={d.name} onMouseEnter={() => setHovered(d.name)} onMouseLeave={() => setHovered(null)} style={{ cursor: "pointer" }}>
-              {/* Outer pulse ring */}
-              {isHot && <circle cx={d.x} cy={d.y} r={r + 8} fill={d.color} opacity="0.1">
-                <animate attributeName="r" values={`${r + 4};${r + 12};${r + 4}`} dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.15;0.05;0.15" dur="2s" repeatCount="indefinite" />
-              </circle>}
-              {/* Glow ring */}
-              <circle cx={d.x} cy={d.y} r={r + 3} fill={d.color} opacity={isHovered ? 0.3 : 0.12} />
-              {/* Main dot */}
-              <circle cx={d.x} cy={d.y} r={r} fill={d.color} opacity={isHovered ? 1 : 0.85} stroke={isHovered ? "white" : "none"} strokeWidth={isHovered ? 2 : 0} />
-              {/* Case count inside dot */}
-              {r >= 8 && <text x={d.x} y={d.y + 3} textAnchor="middle" fill="white" fontSize={r > 12 ? 9 : 7} fontWeight="bold" fontFamily="monospace">{d.cases}</text>}
-              {/* District name label */}
-              <text x={d.x} y={d.y - r - 5} textAnchor="middle" fill={isHovered ? d.color : "var(--color-muted-foreground, #94a3b8)"} fontSize={isHovered ? 9 : 7.5} fontWeight={isHovered ? "bold" : "normal"} fontFamily="monospace">
-                {d.name.length > 12 ? d.name.slice(0, 10) + ".." : d.name}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-
-      {/* Hover tooltip */}
-      {hovered && (() => {
-        const d = districts.find(x => x.name === hovered);
-        if (!d) return null;
-        return (
-          <div className="absolute top-2 right-2 p-3 rounded-lg bg-card border border-border shadow-lg animate-slide-up min-w-[140px]">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
-              <span className="font-mono text-xs font-bold">{d.name}</span>
+      {/* Stats sidebar */}
+      <div className="w-[140px] shrink-0 space-y-2">
+        {selectedD ? (
+          <div className="animate-slide-up">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedD.color }} />
+              <span className="font-mono text-xs font-bold">{selectedD.name}</span>
             </div>
-            <div className="text-lg font-bold font-mono" style={{ color: d.color }}>{d.cases} cases</div>
-            <div className="text-[10px] text-muted-foreground">{((d.cases / totalCases) * 100).toFixed(1)}% of total</div>
+            <div className="text-2xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
+            <div className="text-[10px] text-muted-foreground mb-3">{((selectedD.cases / totalCases) * 100).toFixed(1)}% of total</div>
+            <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(selectedD.cases / 50) * 100}%`, backgroundColor: selectedD.color }} />
+            </div>
           </div>
-        );
-      })()}
-
-      {/* Legend + total */}
-      <div className="flex items-center justify-between mt-2 px-1">
-        <div className="flex gap-3">
-          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-red-500" /><span className="text-[9px] text-muted-foreground">High (&gt;20)</span></div>
-          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-orange-500" /><span className="text-[9px] text-muted-foreground">Medium</span></div>
-          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-yellow-500" /><span className="text-[9px] text-muted-foreground">Watch</span></div>
-          <div className="flex items-center gap-1"><div className="w-2.5 h-2.5 rounded-full bg-green-500" /><span className="text-[9px] text-muted-foreground">Low</span></div>
+        ) : (
+          <div className="text-[10px] text-muted-foreground mb-2">Click a district</div>
+        )}
+        <div className="border-t border-border/50 pt-2 space-y-1">
+          {sorted.slice(0, 8).map((d) => (
+            <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1 rounded transition-colors ${selected === d.name ? "bg-muted" : "hover:bg-muted/50"}`}>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[9px] font-mono truncate max-w-[80px]">{d.name}</span>
+              </div>
+              <span className="text-[9px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
+            </button>
+          ))}
         </div>
-        <span className="text-[10px] font-mono text-muted-foreground">Total: {totalCases} cases</span>
+        <div className="text-[9px] text-muted-foreground font-mono pt-1 border-t border-border/50">Total: {totalCases}</div>
       </div>
     </div>
   );

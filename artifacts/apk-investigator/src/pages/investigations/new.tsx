@@ -438,13 +438,7 @@ export default function NewInvestigation() {
                     <FormControl><Textarea placeholder={"AIzaSy...\nsk-live-..."} {...field} className="font-mono text-sm min-h-[80px] bg-muted/30 border-border/50" /></FormControl>
                   </FormItem>
                 )} />
-              </div>
-              <FormField control={form.control} name="codeSnippets" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs text-muted-foreground">Decompiled code snippets</FormLabel>
-                  <FormControl><Textarea placeholder="Paste suspicious Java/Smali code here..." {...field} className="font-mono text-xs min-h-[160px] bg-slate-950/50 border-border/50" /></FormControl>
-                </FormItem>
-              )} />
+            </div>
             </CardContent>
             <CardFooter className="bg-muted/20 py-4 flex flex-col items-center gap-2 border-t border-border/50">
               <Button type="submit" size="lg" className="w-full max-w-xs font-mono uppercase tracking-wider text-base">

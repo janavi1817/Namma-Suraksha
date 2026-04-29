@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ShieldAlert, Lock, User, MapPin, AlertCircle } from "lucide-react";
 
 const DISTRICTS = [
-  "Bengaluru Urban", "Bengaluru Rural", "Mysuru", "Mangaluru", "Hubli-Dharwad",
+  "Bangalore", "Bengaluru Urban", "Bengaluru Rural", "Mysuru", "Mangaluru", "Hubli-Dharwad",
   "Belagavi", "Kalaburagi", "Ballari", "Davangere", "Shivamogga",
   "Tumakuru", "Raichur", "Hassan", "Udupi", "Chitradurga",
 ];
