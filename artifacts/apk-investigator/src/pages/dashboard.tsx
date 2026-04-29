@@ -325,37 +325,42 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* IOCs and Behaviors */}
+      {/* IOCs and Behaviors — with bar charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-sm font-mono uppercase">Top Indicators of Compromise</CardTitle></CardHeader>
+        <Card className="cyber-card">
+          <CardHeader><CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-primary" /> Indicators of Compromise</CardTitle></CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topIocs.slice(0, 6).map((ioc: any) => ({ name: ioc.value.length > 20 ? ioc.value.slice(0, 18) + ".." : ioc.value, hits: ioc.occurrences, type: ioc.type }))} layout="vertical" margin={{ left: 10, right: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #334155)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 10, fill: "var(--color-muted-foreground, #94a3b8)" }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "var(--color-muted-foreground, #94a3b8)" }} width={120} />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--color-card, #fff)", border: "1px solid var(--color-border, #ddd)", borderRadius: "8px", color: "var(--color-foreground, #000)" }} formatter={(v: any) => [`${v} hits`]} />
+                  <Bar dataKey="hits" fill="#f97316" radius={[0, 4, 4, 0]} animationDuration={1500} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex gap-2 mt-2 flex-wrap">
               {topIocs.slice(0, 5).map((ioc: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-2 rounded bg-muted/50 border border-border/50 text-sm">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="uppercase text-[10px] font-bold text-muted-foreground bg-background px-1.5 py-0.5 rounded border border-border">{ioc.type}</span>
-                    <span className="font-mono truncate">{ioc.value}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground flex-shrink-0 bg-background px-2 py-1 rounded-full border border-border">{ioc.occurrences} hits</span>
-                </div>
+                <span key={i} className="text-[9px] font-mono px-2 py-0.5 rounded bg-muted border border-border/50">{ioc.type}: {ioc.occurrences}</span>
               ))}
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><BugPlay className="h-4 w-4" /> Top Malware Behaviors</CardTitle></CardHeader>
+        <Card className="cyber-card">
+          <CardHeader><CardTitle className="text-sm font-mono uppercase flex items-center gap-2"><BugPlay className="h-4 w-4 text-primary" /> Top Malware Behaviors</CardTitle></CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {topBehaviors.slice(0, 5).map((beh: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-2 rounded bg-muted/50 border border-border/50 text-sm">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <BugPlay className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span className="truncate">{beh.title}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground flex-shrink-0 bg-background px-2 py-1 rounded-full border border-border">{beh.count} instances</span>
-                </div>
-              ))}
+            <div className="h-[220px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topBehaviors.slice(0, 5).map((b: any) => ({ name: b.title.length > 22 ? b.title.slice(0, 20) + ".." : b.title, count: b.count }))} layout="vertical" margin={{ left: 10, right: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #334155)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 10, fill: "var(--color-muted-foreground, #94a3b8)" }} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "var(--color-muted-foreground, #94a3b8)" }} width={140} />
+                  <Tooltip contentStyle={{ backgroundColor: "var(--color-card, #fff)", border: "1px solid var(--color-border, #ddd)", borderRadius: "8px", color: "var(--color-foreground, #000)" }} formatter={(v: any) => [`${v} instances`]} />
+                  <Bar dataKey="count" fill="#ef4444" radius={[0, 4, 4, 0]} animationDuration={1500} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
