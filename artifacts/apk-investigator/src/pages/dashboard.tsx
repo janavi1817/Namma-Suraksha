@@ -68,99 +68,100 @@ function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
   const sorted = [...districts].sort((a, b) => b.cases - a.cases);
   const selectedD = districts.find(x => x.name === selected);
 
-  // Accurate district center positions on a 400x480 Karnataka outline
-  const positions: Record<string, { x: number; y: number }> = {
-    "Bengaluru Urban": { x: 268, y: 340 },
-    "Bengaluru Rural": { x: 245, y: 325 },
-    "Mysuru": { x: 220, y: 395 },
-    "Mangaluru": { x: 100, y: 380 },
-    "Hubli-Dharwad": { x: 145, y: 175 },
-    "Belagavi": { x: 95, y: 130 },
-    "Kalaburagi": { x: 320, y: 95 },
-    "Ballari": { x: 255, y: 185 },
-    "Davangere": { x: 210, y: 230 },
-    "Shivamogga": { x: 165, y: 265 },
-    "Tumakuru": { x: 230, y: 295 },
-    "Raichur": { x: 295, y: 145 },
-    "Hassan": { x: 175, y: 330 },
-    "Udupi": { x: 95, y: 310 },
-    "Chitradurga": { x: 220, y: 255 },
-  };
+  // District positions as percentage on the Karnataka map image
+  const hotspots: { name: string; top: number; left: number }[] = [
+    { name: "Bengaluru Urban", top: 72, left: 62 },
+    { name: "Bengaluru Rural", top: 68, left: 56 },
+    { name: "Mysuru", top: 84, left: 50 },
+    { name: "Mangaluru", top: 76, left: 20 },
+    { name: "Hubli-Dharwad", top: 36, left: 32 },
+    { name: "Belagavi", top: 24, left: 22 },
+    { name: "Kalaburagi", top: 16, left: 70 },
+    { name: "Ballari", top: 38, left: 56 },
+    { name: "Davangere", top: 46, left: 44 },
+    { name: "Shivamogga", top: 54, left: 34 },
+    { name: "Tumakuru", top: 64, left: 52 },
+    { name: "Raichur", top: 28, left: 64 },
+    { name: "Hassan", top: 70, left: 38 },
+    { name: "Udupi", top: 60, left: 16 },
+    { name: "Chitradurga", top: 50, left: 48 },
+  ];
 
   return (
     <div className="flex gap-6">
-      {/* Map area */}
-      <div className="flex-1 relative">
-        <svg viewBox="0 0 400 480" className="w-full h-[380px]">
-          {/* Karnataka state outline — traced from actual boundary */}
-          <path d="
-            M130,28 L155,22 L178,18 L205,22 L228,15 L255,18 L280,28 L305,35
-            L328,48 L345,65 L355,85 L362,108 L365,130 L360,155 L350,172
-            L338,185 L325,195 L318,210 L315,228 L320,248 L328,265 L335,280
-            L330,298 L318,312 L305,325 L295,340 L288,358 L278,372 L265,385
-            L248,398 L232,410 L215,420 L198,428 L178,435 L158,440 L140,442
-            L122,438 L105,428 L90,415 L78,398 L68,378 L58,355 L50,332
-            L42,308 L38,282 L35,258 L32,232 L35,208 L40,185 L48,162
-            L58,140 L68,120 L80,102 L92,85 L105,68 L118,52 L128,38 Z
-          " fill="none" stroke="var(--color-primary, #0095ff)" strokeWidth="2" opacity="0.4" />
+      {/* Map with image */}
+      <div className="flex-1 relative" style={{ minHeight: 420 }}>
+        {/* Karnataka map background image */}
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/India_Karnataka_location_map.svg/800px-India_Karnataka_location_map.svg.png"
+          alt="Karnataka"
+          className="absolute inset-0 w-full h-full object-contain"
+          style={{ opacity: 0.2, filter: "brightness(1.5) contrast(0.8)" }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
 
-          {/* Inner glow of the state */}
-          <path d="
-            M130,28 L155,22 L178,18 L205,22 L228,15 L255,18 L280,28 L305,35
-            L328,48 L345,65 L355,85 L362,108 L365,130 L360,155 L350,172
-            L338,185 L325,195 L318,210 L315,228 L320,248 L328,265 L335,280
-            L330,298 L318,312 L305,325 L295,340 L288,358 L278,372 L265,385
-            L248,398 L232,410 L215,420 L198,428 L178,435 L158,440 L140,442
-            L122,438 L105,428 L90,415 L78,398 L68,378 L58,355 L50,332
-            L42,308 L38,282 L35,258 L32,232 L35,208 L40,185 L48,162
-            L58,140 L68,120 L80,102 L92,85 L105,68 L118,52 L128,38 Z
-          " fill="var(--color-primary, #0095ff)" opacity="0.04" />
-
-          {/* Grid lines inside state */}
-          {[100, 150, 200, 250, 300, 350].map(y => (
-            <line key={`h${y}`} x1="30" y1={y} x2="370" y2={y} stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.08" strokeDasharray="6 6" />
-          ))}
-          {[100, 150, 200, 250, 300].map(x => (
-            <line key={`v${x}`} x1={x} y1="15" x2={x} y2="445" stroke="var(--color-primary, #0095ff)" strokeWidth="0.3" opacity="0.08" strokeDasharray="6 6" />
-          ))}
-
-          {/* District hotspots */}
-          {districts.map((d) => {
-            const pos = positions[d.name];
-            if (!pos) return null;
-            const r = Math.max(10, Math.min(d.cases * 0.6, 28));
+        {/* Interactive hotspot overlay */}
+        <div className="relative w-full h-full" style={{ minHeight: 420 }}>
+          {hotspots.map((hs) => {
+            const d = districts.find(x => x.name === hs.name);
+            if (!d) return null;
+            const size = Math.max(20, Math.min(d.cases * 1.2, 56));
             const isSel = selected === d.name;
             const isHot = d.cases > 20;
 
             return (
-              <g key={d.name} onClick={() => setSelected(isSel ? null : d.name)} style={{ cursor: "pointer" }}>
-                {/* Animated pulse for high-risk */}
+              <div
+                key={d.name}
+                onClick={() => setSelected(isSel ? null : d.name)}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+                style={{ top: `${hs.top}%`, left: `${hs.left}%` }}
+              >
+                {/* Pulse ring */}
                 {isHot && (
-                  <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity="0.15">
-                    <animate attributeName="r" values={`${r};${r + 15};${r}`} dur="2.5s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.15;0.02;0.15" dur="2.5s" repeatCount="indefinite" />
-                  </circle>
+                  <div
+                    className="absolute inset-0 rounded-full animate-ping"
+                    style={{ backgroundColor: d.color, opacity: 0.15, width: size + 16, height: size + 16, top: -8, left: -8 }}
+                  />
                 )}
                 {/* Glow */}
-                <circle cx={pos.x} cy={pos.y} r={r + 4} fill={d.color} opacity={isSel ? 0.25 : 0.08} className="transition-all duration-300" />
+                <div
+                  className="absolute rounded-full transition-all duration-300"
+                  style={{ backgroundColor: d.color, opacity: isSel ? 0.3 : 0.1, width: size + 12, height: size + 12, top: -6, left: -6 }}
+                />
                 {/* Main circle */}
-                <circle cx={pos.x} cy={pos.y} r={r} fill={d.color} opacity={isSel ? 0.95 : 0.7} stroke={isSel ? "white" : d.color} strokeWidth={isSel ? 2.5 : 1} strokeOpacity={isSel ? 1 : 0.3} className="transition-all duration-300" />
-                {/* Case count */}
-                <text x={pos.x} y={pos.y + 4} textAnchor="middle" fill="white" fontSize={r > 15 ? 11 : 9} fontWeight="bold" fontFamily="monospace" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.7)" }}>{d.cases}</text>
-                {/* Label — show for selected or high-case districts */}
-                {(isSel || d.cases > 10) && (
-                  <g>
-                    {/* Label line */}
-                    <line x1={pos.x} y1={pos.y - r - 2} x2={pos.x + (pos.x > 200 ? 15 : -15)} y2={pos.y - r - 14} stroke={isSel ? "white" : d.color} strokeWidth="1" opacity="0.6" />
-                    <text x={pos.x + (pos.x > 200 ? 18 : -18)} y={pos.y - r - 12} textAnchor={pos.x > 200 ? "start" : "end"} fill={isSel ? "white" : "var(--color-foreground, #e2e8f0)"} fontSize={isSel ? 11 : 9} fontWeight="bold" fontFamily="monospace">
-                      {d.name}
-                    </text>
-                  </g>
+                <div
+                  className="rounded-full flex items-center justify-center font-mono font-bold text-white transition-all duration-300"
+                  style={{
+                    width: size, height: size,
+                    backgroundColor: d.color,
+                    opacity: isSel ? 1 : 0.8,
+                    fontSize: size > 30 ? 12 : 9,
+                    boxShadow: isSel ? `0 0 20px ${d.color}80, 0 0 40px ${d.color}30` : `0 2px 8px ${d.color}40`,
+                    border: isSel ? "2px solid white" : "1px solid transparent",
+                  }}
+                >
+                  {d.cases}
+                </div>
+                {/* Label */}
+                {(isSel || d.cases > 12) && (
+                  <div
+                    className="absolute whitespace-nowrap font-mono font-bold transition-all duration-200"
+                    style={{
+                      top: -18,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      fontSize: isSel ? 11 : 9,
+                      color: isSel ? d.color : "var(--color-muted-foreground, #94a3b8)",
+                      textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    {d.name}
+                  </div>
                 )}
-              </g>
+              </div>
             );
           })}
-        </svg>
+        </div>
       </div>
 
       {/* Stats panel */}
@@ -170,7 +171,7 @@ function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
         {selectedD ? (
           <div className="animate-slide-up space-y-3 p-3 rounded-lg bg-muted/30 border border-border/50">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: selectedD.color }} />
+              <div className="w-4 h-4 rounded-full animate-pulse" style={{ backgroundColor: selectedD.color }} />
               <span className="font-mono text-sm font-bold">{selectedD.name}</span>
             </div>
             <div className="text-3xl font-bold font-mono" style={{ color: selectedD.color }}>{selectedD.cases}</div>
@@ -180,39 +181,33 @@ function KarnatakaMap({ districts }: { districts: typeof DISTRICT_DATA }) {
             </div>
             <div className="text-[10px]">
               Threat: <span className="font-bold" style={{ color: selectedD.color }}>
-                {selectedD.cases > 30 ? "CRITICAL" : selectedD.cases > 15 ? "HIGH" : selectedD.cases > 8 ? "MEDIUM" : "LOW"}
+                {selectedD.cases > 30 ? "🔴 CRITICAL" : selectedD.cases > 15 ? "🟠 HIGH" : selectedD.cases > 8 ? "🟡 MEDIUM" : "🟢 LOW"}
               </span>
             </div>
           </div>
         ) : (
-          <div className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/20 border border-border/30">Click any district on the map to view details</div>
+          <div className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/20 border border-dashed border-border/30">
+            Click any district on the map
+          </div>
         )}
 
         <div className="space-y-1.5">
-          <div className="text-[9px] font-mono uppercase text-muted-foreground">Rankings</div>
+          <div className="text-[9px] font-mono uppercase text-muted-foreground">All Districts</div>
           {sorted.map((d, i) => (
             <button key={d.name} onClick={() => setSelected(d.name)} className={`flex items-center justify-between w-full text-left p-1.5 rounded-md transition-all ${selected === d.name ? "bg-muted border border-border" : "hover:bg-muted/40"}`}>
               <div className="flex items-center gap-2">
-                <span className="text-[9px] text-muted-foreground w-3">{i + 1}</span>
+                <span className="text-[9px] text-muted-foreground w-4 text-right">{i + 1}.</span>
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-[10px] font-mono truncate max-w-[80px]">{d.name}</span>
+                <span className="text-[10px] font-mono truncate max-w-[75px]">{d.name}</span>
               </div>
               <span className="text-[10px] font-mono font-bold" style={{ color: d.color }}>{d.cases}</span>
             </button>
           ))}
         </div>
 
-        <div className="pt-2 border-t border-border/50 space-y-1">
-          <div className="flex justify-between text-[10px]">
-            <span className="text-muted-foreground">State Total</span>
-            <span className="font-mono font-bold">{totalCases}</span>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /><span className="text-[8px] text-muted-foreground">&gt;30</span></span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500" /><span className="text-[8px] text-muted-foreground">15-30</span></span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500" /><span className="text-[8px] text-muted-foreground">8-15</span></span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-[8px] text-muted-foreground">&lt;8</span></span>
-          </div>
+        <div className="pt-2 border-t border-border/50 flex justify-between text-[10px]">
+          <span className="text-muted-foreground">State Total</span>
+          <span className="font-mono font-bold">{totalCases}</span>
         </div>
       </div>
     </div>
